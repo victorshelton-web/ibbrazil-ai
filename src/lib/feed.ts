@@ -103,14 +103,20 @@ async function fetchFmpInternational(): Promise<{ items: FeedItem[]; connected: 
     if (!Array.isArray(data)) {
       return { items: [], connected: false, error: JSON.stringify(data).slice(0, 180) };
     }
-    const mapped = data.map(mapFmpRow).filter((x): x is FeedItem => Boolean(x));
+    const items: FeedItem[] = [];
     const seen = new Set<string>();
-    const items = mapped.filter((item) => {
-      const key = `${item.acquirer}|${item.target}|${item.publishedAt.slice(0, 10)}`;
-      if (seen.has(key)) return false;
+    for (const row of data) {
+      const item = mapFmpRow(row);
+      if (!item) continue;
+      const key = [
+        (row.companyName || "").toLowerCase().replace(/\s+/g, " ").trim(),
+        (row.targetedCompanyName || "").toLowerCase().replace(/\s+/g, " ").trim(),
+        row.transactionDate || item.publishedAt.slice(0, 10),
+      ].join("|");
+      if (seen.has(key)) continue;
       seen.add(key);
-      return true;
-    });
+      items.push(item);
+    }
     return { items, connected: true };
   } catch (err) {
     return {
