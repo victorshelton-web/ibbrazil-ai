@@ -3,7 +3,7 @@
 import type { FeedItem, FeedStats } from "@/lib/types";
 import { LangToggle } from "./LangToggle";
 import { LocaleProvider, useI18n } from "./LocaleProvider";
-import { LifetimeSponsor } from "./LifetimeSponsor";
+import { SponsorBanner } from "./SponsorBanner";
 import { RefreshTape } from "./RefreshTape";
 import { StatsStrip } from "./StatsStrip";
 import { TerminalBoard } from "./TerminalBoard";
@@ -41,7 +41,7 @@ function Shell({
             </div>
           </div>
           <div className="flex w-full justify-center">
-            <LifetimeSponsor />
+            <SponsorBanner />
           </div>
         </div>
       </header>
@@ -61,12 +61,12 @@ function Shell({
           <p>
             {t.footerData} {t.footerSponsor}{" "}
             <a
-              href="https://lftm.com.br"
+              href="https://www.ziiplab.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[color:var(--gold)] underline-offset-2 hover:underline"
             >
-              Lifetime
+              ZLAB
             </a>
             . {t.noAuth}
           </p>
