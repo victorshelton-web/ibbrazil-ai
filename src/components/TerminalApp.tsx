@@ -2,7 +2,6 @@
 
 import type { FeedItem, FeedStats } from "@/lib/types";
 import { LocaleProvider, useI18n } from "./LocaleProvider";
-import { LangToggle } from "./LangToggle";
 import { LifetimeSponsor } from "./LifetimeSponsor";
 import { RefreshTape } from "./RefreshTape";
 import { StatsStrip } from "./StatsStrip";
@@ -35,10 +34,7 @@ function Shell({
                 {t.intro} {windowLabel}.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <LangToggle />
-              <RefreshTape />
-            </div>
+            <RefreshTape />
           </div>
           <div className="flex w-full justify-center">
             <LifetimeSponsor />
