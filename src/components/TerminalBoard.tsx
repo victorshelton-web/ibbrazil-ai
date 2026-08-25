@@ -5,13 +5,7 @@ import type { FeedCategory, FeedItem } from "@/lib/types";
 import { DealCard } from "./DealCard";
 import { DealsTable } from "./DealsTable";
 import { sectionBlurb, sectionTitle } from "@/lib/format";
-
-const FILTERS: { id: "all" | FeedCategory; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "brazil-ma", label: "Brazil" },
-  { id: "international-ma", label: "International" },
-  { id: "brazil-news", label: "Corporate News" },
-];
+import { useI18n } from "./LocaleProvider";
 
 const SECTIONS: FeedCategory[] = ["brazil-ma", "international-ma", "brazil-news"];
 
@@ -50,6 +44,13 @@ const chip =
   "h-7 rounded-sm border px-2.5 font-mono text-[11px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]";
 
 export function TerminalBoard({ items }: { items: FeedItem[] }) {
+  const { t } = useI18n();
+  const FILTERS: { id: "all" | FeedCategory; label: string }[] = [
+    { id: "all", label: t.filterAll },
+    { id: "brazil-ma", label: t.filterBrazil },
+    { id: "international-ma", label: t.filterIntl },
+    { id: "brazil-news", label: t.filterNews },
+  ];
   const [filter, setFilter] = useState<"all" | FeedCategory>("all");
   const [query, setQuery] = useState("");
   const [sector, setSector] = useState("all");
@@ -109,21 +110,21 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
         <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
           <label className="md:col-span-4" htmlFor="tape-search">
             <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-              Search
+              {t.search}
             </span>
             <input
               id="tape-search"
               type="search"
               value={query}
               onChange={(e) => startTransition(() => setQuery(e.target.value))}
-              placeholder="Acquirer, target, sector, headline"
+              placeholder={t.searchPh}
               className="h-8 w-full rounded-sm border border-border bg-background px-2.5 font-sans text-sm text-foreground placeholder:text-muted-foreground"
             />
           </label>
 
           <label className="md:col-span-2" htmlFor="tape-sector">
             <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-              Sector
+              {t.sector}
             </span>
             <select
               id="tape-sector"
@@ -133,7 +134,7 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
             >
               {sectors.map((s) => (
                 <option key={s} value={s}>
-                  {s === "all" ? "All sectors" : s}
+                  {s === "all" ? t.allSectors : s}
                 </option>
               ))}
             </select>
@@ -141,7 +142,7 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
 
           <label className="md:col-span-2" htmlFor="tape-value">
             <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-              Deal value
+              {t.dealValue}
             </span>
             <select
               id="tape-value"
@@ -151,17 +152,17 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
               }
               className="h-8 w-full rounded-sm border border-border bg-background px-2 font-sans text-sm text-foreground"
             >
-              <option value="any">Any value</option>
+              <option value="any">{t.anyValue}</option>
               <option value="lt100">&lt; $100m</option>
               <option value="mid">$100m – $1bn</option>
               <option value="gt1b">&gt; $1bn</option>
-              <option value="undisclosed">Undisclosed</option>
+              <option value="undisclosed">{t.undisclosed}</option>
             </select>
           </label>
 
           <label className="md:col-span-2" htmlFor="tape-sort">
             <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-              Sort
+              {t.sort}
             </span>
             <select
               id="tape-sort"
@@ -169,15 +170,15 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
               onChange={(e) => startTransition(() => setSort(e.target.value as SortMode))}
               className="h-8 w-full rounded-sm border border-border bg-background px-2 font-sans text-sm text-foreground"
             >
-              <option value="newest">Newest</option>
-              <option value="value-desc">Value desc</option>
-              <option value="value-asc">Value asc</option>
+              <option value="newest">{t.newest}</option>
+              <option value="value-desc">{t.valueDesc}</option>
+              <option value="value-asc">{t.valueAsc}</option>
             </select>
           </label>
 
           <div className="md:col-span-2">
             <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-              M&A view
+              {t.view}
             </span>
             <div
               role="group"
@@ -198,7 +199,7 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
                       : "text-zinc-300 hover:bg-muted"
                   }`}
                 >
-                  {mode === "cards" ? "Cards" : "Table"}
+                  {mode === "cards" ? t.cards : t.table}
                 </button>
               ))}
             </div>
@@ -208,8 +209,8 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
         <p
           className={`font-mono text-[11px] text-[color:var(--gold)] ${pending ? "opacity-70" : ""}`}
         >
-          Showing {filtered.length} row{filtered.length === 1 ? "" : "s"} · {filterLabel} · {view}{" "}
-          view
+          {t.showing} {filtered.length} {filtered.length === 1 ? t.row : t.rows} · {filterLabel} ·{" "}
+          {view === "cards" ? t.cards : t.table} {t.viewWord}
         </p>
       </div>
 
@@ -221,16 +222,16 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
         >
           <div className="mb-3 border-b border-border pb-2">
             <p className="font-mono text-[10px] tracking-[0.2em] text-[color:var(--gold)] uppercase">
-              Section {String(idx + 1).padStart(2, "0")}
+              {t.section} {String(idx + 1).padStart(2, "0")}
             </p>
             <h2 id={section.cat} className="text-lg font-semibold text-zinc-100">
-              {sectionTitle(section.cat)}
+              {sectionTitle(section.cat, t)}
             </h2>
-            <p className="text-xs text-muted-foreground">{sectionBlurb(section.cat)}</p>
+            <p className="text-xs text-muted-foreground">{sectionBlurb(section.cat, t)}</p>
           </div>
 
           {view === "table" ? (
-            <DealsTable rows={section.rows} caption={sectionTitle(section.cat)} />
+            <DealsTable rows={section.rows} caption={sectionTitle(section.cat, t)} />
           ) : (
             <ul className="grid grid-cols-1 gap-2 xl:grid-cols-2">
               {section.rows.map((item) => (
@@ -240,7 +241,7 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
               ))}
               {section.rows.length === 0 ? (
                 <li className="border border-dashed border-border px-3 py-6 text-sm text-muted-foreground xl:col-span-2">
-                  No rows in this filter.
+                  {t.empty}
                 </li>
               ) : null}
             </ul>

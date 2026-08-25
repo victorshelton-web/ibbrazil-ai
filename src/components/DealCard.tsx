@@ -1,3 +1,5 @@
+"use client";
+
 import type { FeedItem } from "@/lib/types";
 import {
   formatMoney,
@@ -8,9 +10,11 @@ import {
   provenanceClass,
   provenanceLabel,
 } from "@/lib/format";
+import { useI18n } from "./LocaleProvider";
 
 export function DealCard({ item }: { item: FeedItem }) {
-  const labels = partyLabels(item.kind);
+  const { t } = useI18n();
+  const labels = partyLabels(item.kind, t);
   const dashed = item.provenance === "needs-api" || item.provenance === "estimated";
 
   return (
@@ -27,7 +31,7 @@ export function DealCard({ item }: { item: FeedItem }) {
         <span
           className={`inline-flex h-5 w-fit shrink-0 items-center rounded-sm border px-2 py-0.5 font-mono text-[10px] tracking-wide uppercase ${provenanceClass(item.provenance)}`}
         >
-          {provenanceLabel(item.provenance)}
+          {provenanceLabel(item.provenance, t)}
         </span>
       </div>
 
@@ -50,25 +54,25 @@ export function DealCard({ item }: { item: FeedItem }) {
         </div>
         <div>
           <dt className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-            Est. deal value
+            {t.estValue}
           </dt>
           <dd className="mt-0.5 font-mono text-[color:var(--gold)]">
-            {item.kind === "news" ? "n/a — news" : formatMoney(item.valueUsd, item.valueBrl)}
+            {item.kind === "news" ? t.newsNa : formatMoney(item.valueUsd, item.valueBrl, undefined, t.undisclosed)}
           </dd>
         </div>
         <div>
           <dt className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-            Timestamp
+            {t.timestamp}
           </dt>
           <dd className="mt-0.5 font-mono text-[color:var(--gold)]">
-            {formatWhen(item.publishedAt)}
+            {formatWhen(item.publishedAt, t)}
           </dd>
         </div>
       </dl>
 
       <details className="border-t border-border px-3 py-2">
         <summary className="cursor-pointer font-mono text-[11px] text-[color:var(--gold)] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]">
-          Highlights & source
+          {t.highlights}
         </summary>
         <div className="mt-2 space-y-2 text-xs leading-relaxed text-zinc-300">
           <p>{item.highlights}</p>
@@ -76,7 +80,7 @@ export function DealCard({ item }: { item: FeedItem }) {
             <p className="text-muted-foreground">{item.valueNote}</p>
           ) : null}
           <p className="font-mono text-[11px]">
-            Source:{" "}
+            {t.source}:{" "}
             {item.sourceUrl ? (
               <a
                 href={item.sourceUrl}
@@ -88,7 +92,7 @@ export function DealCard({ item }: { item: FeedItem }) {
               </a>
             ) : (
               <span className="text-muted-foreground">
-                {item.sourceName} — no public URL
+                {item.sourceName} — {t.noUrl}
               </span>
             )}
           </p>

@@ -1,34 +1,38 @@
+"use client";
+
 import type { FeedStats } from "@/lib/types";
 import { formatBrtLong, formatDisclosed, formatUtcLong } from "@/lib/format";
+import { useI18n } from "./LocaleProvider";
 
 export function StatsStrip({ stats }: { stats: FeedStats }) {
+  const { t } = useI18n();
   const cells = [
     {
-      label: "Brazilian M&A / VC",
+      label: t.brazilMa,
       value: String(stats.brazilLive),
-      hint: "Live deals in window",
+      hint: t.liveDeals,
       gold: false,
     },
     {
-      label: "International M&A",
+      label: t.intlMa,
       value: String(stats.internationalLive),
-      hint: "Live global deals",
+      hint: t.liveGlobal,
       gold: false,
     },
     {
-      label: "Brazil corporate news",
+      label: t.brazilNews,
       value: String(stats.newsCount),
-      hint: "Non-deal, market-moving",
+      hint: t.nonDeal,
       gold: false,
     },
     {
-      label: "Disclosed deal value",
+      label: t.disclosed,
       value: formatDisclosed(stats.disclosedUsd),
-      hint: `$${stats.disclosedUsd.toLocaleString("en-US")} live disclosed. ${stats.undisclosedLive} live deals undisclosed. Earn-outs and placeholders excluded. FX ${stats.fx} BRL/USD.`,
+      hint: `$${stats.disclosedUsd.toLocaleString("en-US")} ${t.earnouts} ${stats.undisclosedLive} ${t.undisclosedDeals} ${stats.fx} BRL/USD.`,
       gold: true,
     },
     {
-      label: "Last updated",
+      label: t.lastUpdated,
       value: `${formatBrtLong(stats.lastUpdatedIso)} BRT`,
       hint: `${formatUtcLong(stats.lastUpdatedIso)} UTC`,
       gold: true,
@@ -36,7 +40,7 @@ export function StatsStrip({ stats }: { stats: FeedStats }) {
   ];
 
   return (
-    <section aria-label="Window summary" className="border-b border-border">
+    <section aria-label={t.lastUpdated} className="border-b border-border">
       <div className="mx-auto grid max-w-[1400px] grid-cols-2 divide-x divide-y divide-border md:grid-cols-5 md:divide-y-0">
         {cells.map((c) => (
           <div key={c.label} className="px-4 py-3 md:px-5">

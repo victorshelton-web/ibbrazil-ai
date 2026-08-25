@@ -1,4 +1,5 @@
 import type { FeedItem, Provenance } from "@/lib/types";
+import type { Copy } from "./i18n";
 
 export function getFx(): number {
   return Number(process.env.NEXT_PUBLIC_FX_BRL_USD || process.env.FX_BRL_USD || "5.16");
@@ -32,9 +33,13 @@ function formatBrl(brl: number): string {
   return `R$ ${brl.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`;
 }
 
-/** Prefer disclosed USD; if only USD, also show BRL at window FX. */
-export function formatMoney(usd: number | null, brl: number | null, fx = getFx()): string {
-  if (usd == null && brl == null) return "Undisclosed";
+export function formatMoney(
+  usd: number | null,
+  brl: number | null,
+  fx = getFx(),
+  undisclosedLabel = "Undisclosed",
+): string {
+  if (usd == null && brl == null) return undisclosedLabel;
   if (usd != null && brl != null) return `${formatUsd(usd)} / ${formatBrl(brl)}`;
   if (usd != null) return `${formatUsd(usd)} / ${formatBrl(usd * fx)}`;
   return formatBrl(brl as number);
@@ -44,16 +49,20 @@ export function formatDisclosed(usd: number): string {
   return formatUsd(usd);
 }
 
-export function formatWhen(iso: string, now = new Date()): string {
+export function formatWhen(iso: string, t?: Copy, now = new Date()): string {
   const d = new Date(iso);
   const diffMs = Math.max(0, now.getTime() - d.getTime());
   const mins = Math.round(diffMs / 60_000);
   const hours = Math.round(diffMs / 3_600_000);
   const days = Math.round(diffMs / 86_400_000);
   let ago: string;
-  if (mins < 60) ago = mins <= 1 ? "just now" : `${mins} min ago`;
-  else if (hours < 48) ago = hours === 1 ? "1 hour ago" : `${hours} hours ago`;
-  else ago = days === 1 ? "1 day ago" : `${days} days ago`;
+  if (!t) {
+    if (mins < 60) ago = mins <= 1 ? "just now" : `${mins} min ago`;
+    else if (hours < 48) ago = hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+    else ago = days === 1 ? "1 day ago" : `${days} days ago`;
+  } else if (mins < 60) ago = mins <= 1 ? t.justNow : `${mins} ${t.minAgo}`;
+  else if (hours < 48) ago = hours === 1 ? t.hourAgo : `${hours} ${t.hoursAgo}`;
+  else ago = days === 1 ? t.dayAgo : `${days} ${t.daysAgo}`;
 
   const brt = d.toLocaleString("en-GB", {
     timeZone: "America/Sao_Paulo",
@@ -91,7 +100,19 @@ export function formatUtcLong(iso: string): string {
   });
 }
 
-export function provenanceLabel(p: Provenance): string {
+export function provenanceLabel(p: Provenance, t?: Copy): string {
+  if (t) {
+    switch (p) {
+      case "live":
+        return t.live;
+      case "api":
+        return t.apiLive;
+      case "estimated":
+        return t.estimated;
+      case "needs-api":
+        return t.offline;
+    }
+  }
   switch (p) {
     case "live":
       return "Live";
@@ -116,7 +137,12 @@ export function provenanceClass(p: Provenance): string {
   }
 }
 
-export function sectionTitle(category: FeedItem["category"]): string {
+export function sectionTitle(category: FeedItem["category"], t?: Copy): string {
+  if (t) {
+    if (category === "brazil-ma") return t.secBr;
+    if (category === "international-ma") return t.secInt;
+    return t.secNews;
+  }
   switch (category) {
     case "brazil-ma":
       return "Brazilian M&A";
@@ -127,7 +153,12 @@ export function sectionTitle(category: FeedItem["category"]): string {
   }
 }
 
-export function sectionBlurb(category: FeedItem["category"]): string {
+export function sectionBlurb(category: FeedItem["category"], t?: Copy): string {
+  if (t) {
+    if (category === "brazil-ma") return t.blurbBr;
+    if (category === "international-ma") return t.blurbInt;
+    return t.blurbNews;
+  }
   switch (category) {
     case "brazil-ma":
       return "Domestic Brazil M&A, VC rounds, and major corporate-control events.";
@@ -138,7 +169,15 @@ export function sectionBlurb(category: FeedItem["category"]): string {
   }
 }
 
-export function partyLabels(kind: FeedItem["kind"]): { left: string; right: string } {
+export function partyLabels(
+  kind: FeedItem["kind"],
+  t?: Copy,
+): { left: string; right: string } {
+  if (t) {
+    return kind === "news"
+      ? { left: t.company, right: t.topic }
+      : { left: t.acquirer, right: t.target };
+  }
   return kind === "news"
     ? { left: "Company", right: "Topic" }
     : { left: "Acquirer", right: "Target" };
