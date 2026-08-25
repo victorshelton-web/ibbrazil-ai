@@ -13,9 +13,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Brazil + Global M&A Terminal — ibbrazil.ai",
+  metadataBase: new URL("https://ibbrazil.ai"),
+  title: {
+    default: "Brazil + Global M&A Terminal — ibbrazil.ai",
+    template: "%s · ibbrazil.ai",
+  },
   description:
-    "Operator dashboard of Brazilian and international M&A plus major Brazilian corporate news, with live FMP/SEC global tape.",
+    "Operator dashboard of Brazilian and international M&A plus major Brazilian corporate news.",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({

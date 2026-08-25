@@ -87,3 +87,11 @@ body {
 .live-dot {
   animation: pulse-gold 2.2s ease-in-out infinite;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .deal-card,
+  .stats-strip,
+  .live-dot {
+    animation: none !important;
+  }
+}

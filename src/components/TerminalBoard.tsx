@@ -21,7 +21,7 @@ type SortMode = "newest" | "value-desc" | "value-asc";
 
 function matchesValue(item: FeedItem, valueFilter: ValueFilter): boolean {
   if (valueFilter === "any") return true;
-  if (item.kind === "news") return valueFilter === "undisclosed";
+  if (item.kind === "news") return false;
   if (valueFilter === "undisclosed") return item.valueUsd == null;
   if (item.valueUsd == null) return false;
   if (valueFilter === "lt100") return item.valueUsd < 100_000_000;
@@ -41,7 +41,9 @@ function sortItems(items: FeedItem[], sort: SortMode): FeedItem[] {
   if (sort === "value-desc") {
     return copy.sort((a, b) => (b.valueUsd ?? -1) - (a.valueUsd ?? -1));
   }
-  return copy.sort((a, b) => (a.valueUsd ?? Number.MAX_SAFE_INTEGER) - (b.valueUsd ?? Number.MAX_SAFE_INTEGER));
+  return copy.sort(
+    (a, b) => (a.valueUsd ?? Number.MAX_SAFE_INTEGER) - (b.valueUsd ?? Number.MAX_SAFE_INTEGER),
+  );
 }
 
 export function TerminalBoard({ items }: { items: FeedItem[] }) {
@@ -65,13 +67,7 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
       if (sector !== "all" && item.sector !== sector) return false;
       if (!matchesValue(item, valueFilter)) return false;
       if (!q) return true;
-      const hay = [
-        item.headline,
-        item.acquirer,
-        item.target,
-        item.sector,
-        item.highlights,
-      ]
+      const hay = [item.headline, item.acquirer, item.target, item.sector, item.highlights]
         .join(" ")
         .toLowerCase();
       return hay.includes(q);
@@ -79,24 +75,26 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
     return sortItems(base, sort);
   }, [items, filter, query, sector, valueFilter, sort]);
 
-  const sections = SECTIONS.filter(
-    (cat) => filter === "all" || filter === cat,
-  ).map((cat) => ({
+  const sections = SECTIONS.filter((cat) => filter === "all" || filter === cat).map((cat) => ({
     cat,
     rows: filtered.filter((i) => i.category === cat),
   }));
+
+  const filterLabel = FILTERS.find((f) => f.id === filter)?.label ?? "All";
 
   return (
     <div className="space-y-8">
       <div className="space-y-3 border border-border bg-card/40 p-3">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1" role="tablist" aria-label="Section filter">
             {FILTERS.map((f) => (
               <button
                 key={f.id}
                 type="button"
+                role="tab"
+                aria-selected={filter === f.id}
                 onClick={() => startTransition(() => setFilter(f.id))}
-                className={`px-3 py-1.5 font-mono text-[11px] tracking-wide uppercase transition-colors ${
+                className={`px-3 py-1.5 font-mono text-[11px] tracking-wide uppercase transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] ${
                   filter === f.id
                     ? "bg-[color:var(--gold)] text-[#0b0c0a]"
                     : "text-muted-foreground hover:text-zinc-200"
@@ -191,13 +189,14 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
             <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
               M&A view
             </span>
-            <div className="flex gap-1">
+            <div className="flex gap-1" role="group" aria-label="View mode">
               {(["cards", "table"] as ViewMode[]).map((mode) => (
                 <button
                   key={mode}
                   type="button"
+                  aria-pressed={view === mode}
                   onClick={() => startTransition(() => setView(mode))}
-                  className={`px-3 py-1 font-mono text-[11px] tracking-wide uppercase ${
+                  className={`px-3 py-1 font-mono text-[11px] tracking-wide uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] ${
                     view === mode
                       ? "bg-[color:var(--gold)] text-[#0b0c0a]"
                       : "text-muted-foreground hover:text-zinc-200"
@@ -212,7 +211,7 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
       </div>
 
       <p className={`font-mono text-[11px] text-muted-foreground ${pending ? "opacity-60" : ""}`}>
-        Showing {filtered.length} rows · {view} view
+        Showing {filtered.length} rows · {filterLabel} · {view} view
       </p>
 
       {sections.map((section, idx) => (
@@ -233,7 +232,7 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
           </header>
 
           {view === "table" ? (
-            <DealsTable rows={section.rows} />
+            <DealsTable rows={section.rows} caption={sectionTitle(section.cat)} />
           ) : (
             <div className="grid gap-3">
               {section.rows.map((item) => (

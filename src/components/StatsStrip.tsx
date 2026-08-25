@@ -1,17 +1,17 @@
 import type { FeedStats } from "@/lib/types";
-import { formatBrtLong, formatDisclosed } from "@/lib/format";
+import { formatBrtLong, formatDisclosed, formatUtcLong } from "@/lib/format";
 
 export function StatsStrip({ stats }: { stats: FeedStats }) {
   const cells = [
     {
-      label: "Brazilian M&A / VC",
+      label: "Brazilian M&A",
       value: String(stats.brazilLive),
       hint: "Live deals in window",
     },
     {
       label: "International M&A",
       value: String(stats.internationalLive),
-      hint: stats.apiConnected ? "Live global deals (API)" : "Live global deals",
+      hint: stats.apiConnected ? "Live global deals" : "Curated global deals",
     },
     {
       label: "Brazil corporate news",
@@ -21,14 +21,12 @@ export function StatsStrip({ stats }: { stats: FeedStats }) {
     {
       label: "Disclosed deal value",
       value: formatDisclosed(stats.disclosedUsd),
-      hint: `$${stats.disclosedUsd.toLocaleString("en-US")} live disclosed. ${stats.undisclosedLive} live deals undisclosed. FX ${stats.fx} BRL/USD.`,
+      hint: `$${stats.disclosedUsd.toLocaleString("en-US")} live disclosed. ${stats.undisclosedLive} live deals undisclosed. Earn-outs and placeholders excluded. FX ${stats.fx} BRL/USD.`,
     },
     {
       label: "Last updated",
       value: `${formatBrtLong(stats.lastUpdatedIso)} BRT`,
-      hint: stats.apiConnected
-        ? `Feed: ${stats.apiSource}`
-        : "Static + pending API",
+      hint: `${formatUtcLong(stats.lastUpdatedIso)} UTC · ${stats.apiConnected ? stats.apiSource : "API offline"}`,
     },
   ];
 
