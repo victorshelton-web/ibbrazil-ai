@@ -70,6 +70,11 @@ const BRAND_KEEP = new Set([
   "AI",
   "GLP",
   "TMS",
+  "ON",
+  "USA",
+  "UK",
+  "US",
+  "EU",
 ]);
 
 function slug(input: string): string {
