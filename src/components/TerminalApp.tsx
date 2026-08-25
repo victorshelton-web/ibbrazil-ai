@@ -59,9 +59,9 @@ function Shell({
 
       <MarketTapeBar tape={tape} />
 
-      <DeskMenu view={view} onChange={setView} />
+      <StatsStrip stats={stats} />
 
-      {view === "news" ? <StatsStrip stats={stats} /> : null}
+      <DeskMenu view={view} onChange={setView} />
 
       <main className="mx-auto max-w-[1400px] space-y-8 px-4 py-4 md:px-6">
         {view === "news" ? <TerminalBoard items={items} /> : <FatosRelevantes feed={fatos} />}
