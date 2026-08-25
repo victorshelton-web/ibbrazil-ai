@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
   const kind = sniffDocument(buf);
   if (!kind) return new Response("Document unavailable.", { status: 502 });
 
-  return new Response(buf, {
+  return new Response(Uint8Array.from(buf), {
     headers: {
       "Content-Type": kind.type,
       "Content-Disposition": `inline; filename="cvm-${ref.protocolo}.${kind.ext}"`,
