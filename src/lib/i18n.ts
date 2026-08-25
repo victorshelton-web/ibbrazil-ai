@@ -90,6 +90,8 @@ export const copy = {
     fatosDays: "days",
     fatosCompanies: "issuers",
     fatosSearch: "Company or subject",
+    menuNews: "News",
+    menuFatos: "Fato Relevante B3 / CVM",
   },
   pt: {
     kicker: "Terminal de M&A / Notícias",
@@ -180,6 +182,8 @@ export const copy = {
     fatosDays: "dias",
     fatosCompanies: "emissoras",
     fatosSearch: "Empresa ou assunto",
+    menuNews: "News",
+    menuFatos: "Fato Relevante B3 / CVM",
   },
 } as const;
 

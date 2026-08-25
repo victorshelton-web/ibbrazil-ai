@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import type { FatosFeed } from "@/lib/fatos-relevantes";
 import type { MarketTape } from "@/lib/market-tape";
 import type { FeedItem, FeedStats } from "@/lib/types";
+import { DeskMenu, type DeskView } from "./DeskMenu";
 import { FatosRelevantes } from "./FatosRelevantes";
 import { LangToggle } from "./LangToggle";
 import { LocaleProvider, useI18n } from "./LocaleProvider";
@@ -26,6 +28,7 @@ function Shell({
   fatos: FatosFeed;
 }) {
   const { t } = useI18n();
+  const [view, setView] = useState<DeskView>("news");
 
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -56,11 +59,12 @@ function Shell({
 
       <MarketTapeBar tape={tape} />
 
-      <StatsStrip stats={stats} />
+      <DeskMenu view={view} onChange={setView} />
+
+      {view === "news" ? <StatsStrip stats={stats} /> : null}
 
       <main className="mx-auto max-w-[1400px] space-y-8 px-4 py-4 md:px-6">
-        <TerminalBoard items={items} />
-        <FatosRelevantes feed={fatos} />
+        {view === "news" ? <TerminalBoard items={items} /> : <FatosRelevantes feed={fatos} />}
       </main>
 
       <footer className="border-t border-border">
