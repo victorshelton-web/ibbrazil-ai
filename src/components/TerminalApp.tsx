@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import type { CadeFeed } from "@/lib/cade";
 import type { FatosFeed } from "@/lib/fatos-relevantes";
 import type { MarketTape } from "@/lib/market-tape";
 import type { FeedItem, FeedStats } from "@/lib/types";
+import { CadeBoard } from "./CadeBoard";
 import { DeskMenu, type DeskView } from "./DeskMenu";
 import { FatosRelevantes } from "./FatosRelevantes";
 import { LangToggle } from "./LangToggle";
@@ -20,12 +22,16 @@ function Shell({
   windowLabel,
   tape,
   fatos,
+  comunicados,
+  cade,
 }: {
   items: FeedItem[];
   stats: FeedStats;
   windowLabel: string;
   tape: MarketTape;
   fatos: FatosFeed;
+  comunicados: FatosFeed;
+  cade: CadeFeed;
 }) {
   const { t } = useI18n();
   const [view, setView] = useState<DeskView>("news");
@@ -64,7 +70,12 @@ function Shell({
       <DeskMenu view={view} onChange={setView} />
 
       <main className="mx-auto max-w-[1400px] space-y-8 px-4 py-4 md:px-6">
-        {view === "news" ? <TerminalBoard items={items} /> : <FatosRelevantes feed={fatos} />}
+        {view === "news" ? <TerminalBoard items={items} /> : null}
+        {view === "fatos" ? <FatosRelevantes feed={fatos} variant="fatos" /> : null}
+        {view === "comunicados" ? (
+          <FatosRelevantes feed={comunicados} variant="comunicados" />
+        ) : null}
+        {view === "cade" ? <CadeBoard feed={cade} /> : null}
       </main>
 
       <footer className="border-t border-border">
@@ -97,6 +108,8 @@ export function TerminalApp(props: {
   windowLabel: string;
   tape: MarketTape;
   fatos: FatosFeed;
+  comunicados: FatosFeed;
+  cade: CadeFeed;
 }) {
   return (
     <LocaleProvider>

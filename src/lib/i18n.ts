@@ -68,7 +68,7 @@ export const copy = {
     offline: "Feed offline",
     footerClock: "Display clocks use America/Sao_Paulo (BRT) and UTC. Window FX ~",
     footerData:
-      "International tape from Financial Modeling Prep (SEC EDGAR). B3 material facts from CVM IPE. Brazil deal rows curated from public filings and press. Confirm against primary sources.",
+      "International tape from Financial Modeling Prep (SEC EDGAR). B3 facts and market notices from CVM IPE. CADE merger news from the official site. Brazil deal rows curated from public filings and press. Confirm against primary sources.",
     footerSponsor: "Portal sponsored by",
     noAuth: "No auth, no paywall.",
     justNow: "just now",
@@ -92,6 +92,19 @@ export const copy = {
     fatosSearch: "Company or subject",
     menuNews: "News",
     menuFatos: "Fato Relevante B3 / CVM",
+    menuComunicados: "Comunicados ao Mercado",
+    menuCade: "CADE",
+    secComunicadosKicker: "B3 / CVM",
+    secComunicados: "Market notices",
+    blurbComunicados:
+      "Official Comunicado ao Mercado filings from CVM IPE, last 21 days, grouped by theme and date. Confirm against the CVM document.",
+    comunicadosCount: "notices",
+    secCadeKicker: "Antitrust",
+    secCade: "CADE merger control",
+    blurbCade:
+      "Official CADE news on merger filings, clearances, remedies and hearing agendas. Confirm on the CADE page.",
+    cadeCount: "items",
+    cadeSearch: "Company or decision",
   },
   pt: {
     kicker: "Terminal de M&A / Notícias",
@@ -160,7 +173,7 @@ export const copy = {
     offline: "Feed offline",
     footerClock: "Relógios em America/Sao_Paulo (BRT) e UTC. FX da janela ~",
     footerData:
-      "Fita internacional via Financial Modeling Prep (SEC EDGAR). Fatos relevantes da B3 via IPE da CVM. Linhas de deal do Brasil curadas de filings e imprensa. Confirme nas fontes primárias.",
+      "Fita internacional via Financial Modeling Prep (SEC EDGAR). Fatos e comunicados da B3 via IPE da CVM. Atos de concentração via site oficial do CADE. Linhas de deal do Brasil curadas de filings e imprensa. Confirme nas fontes primárias.",
     footerSponsor: "Portal patrocinado por",
     noAuth: "Sem login, sem paywall.",
     justNow: "agora",
@@ -184,6 +197,19 @@ export const copy = {
     fatosSearch: "Empresa ou assunto",
     menuNews: "News",
     menuFatos: "Fato Relevante B3 / CVM",
+    menuComunicados: "Comunicados ao Mercado",
+    menuCade: "CADE",
+    secComunicadosKicker: "B3 / CVM",
+    secComunicados: "Comunicados ao Mercado",
+    blurbComunicados:
+      "Comunicados ao Mercado oficiais do IPE da CVM, últimos 21 dias, organizados por tema e data. Confirme no documento da CVM.",
+    comunicadosCount: "comunicados",
+    secCadeKicker: "Antitruste",
+    secCade: "Atos de concentração do CADE",
+    blurbCade:
+      "Notícias oficiais do CADE sobre atos de concentração, aprovações, restrições e pautas. Confirme na página do CADE.",
+    cadeCount: "itens",
+    cadeSearch: "Empresa ou decisão",
   },
 } as const;
 

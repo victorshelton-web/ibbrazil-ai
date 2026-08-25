@@ -90,8 +90,8 @@ function parseCsv(text: string): string[][] {
     .map((line) => line.split(";"));
 }
 
-export async function loadFatosRelevantes(): Promise<FatosFeed> {
-  const empty: FatosFeed = {
+function emptyFeed(): FatosFeed {
+  return {
     items: [],
     windowDays: WINDOW_DAYS,
     asOf: new Date().toISOString(),
@@ -109,6 +109,72 @@ export async function loadFatosRelevantes(): Promise<FatosFeed> {
       other: 0,
     },
   };
+}
+
+function collectCategory(
+  rows: string[][],
+  idx: Record<string, number>,
+  category: string,
+): FatoRelevante[] {
+  const cut = Date.now() - WINDOW_DAYS * 86_400_000;
+  const seen = new Set<string>();
+  const items: FatoRelevante[] = [];
+
+  for (const row of rows.slice(1)) {
+    if ((row[idx.Categoria] || "") !== category) continue;
+    const delivered = (row[idx.Data_Entrega] || "").slice(0, 10);
+    const t = new Date(`${delivered}T15:00:00-03:00`).getTime();
+    if (!delivered || Number.isNaN(t) || t < cut) continue;
+    const company = titleCompany(row[idx.Nome_Companhia] || "");
+    const subject = (row[idx.Assunto] || "").trim();
+    if (!company || !subject) continue;
+    const key = `${company}|${subject}|${delivered}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    items.push({
+      id: row[idx.Protocolo_Entrega] || key,
+      company,
+      cnpj: row[idx.CNPJ_Companhia] || "",
+      subject,
+      deliveredAt: delivered,
+      group: classify(subject),
+      url: row[idx.Link_Download] || null,
+      quotes: [],
+    });
+  }
+
+  items.sort((a, b) => b.deliveredAt.localeCompare(a.deliveredAt) || a.company.localeCompare(b.company));
+  return items;
+}
+
+function toFeed(items: FatoRelevante[]): FatosFeed {
+  const counts: FatosFeed["counts"] = {
+    all: items.length,
+    ma: 0,
+    dividend: 0,
+    offer: 0,
+    buyback: 0,
+    reorg: 0,
+    gov: 0,
+    earnings: 0,
+    clarify: 0,
+    other: 0,
+  };
+  for (const item of items) counts[item.group] += 1;
+  return {
+    items,
+    windowDays: WINDOW_DAYS,
+    asOf: new Date().toISOString(),
+    companyCount: new Set(items.map((item) => item.company)).size,
+    counts,
+  };
+}
+
+export async function loadCvmIpeDesk(): Promise<{
+  fatos: FatosFeed;
+  comunicados: FatosFeed;
+}> {
+  const empty = { fatos: emptyFeed(), comunicados: emptyFeed() };
 
   try {
     const year = new Date().getFullYear();
@@ -128,72 +194,35 @@ export async function loadFatosRelevantes(): Promise<FatosFeed> {
     const rows = parseCsv(unzipCsv(buf));
     const header = rows[0] || [];
     const idx = Object.fromEntries(header.map((h, i) => [h, i]));
-    const cut = Date.now() - WINDOW_DAYS * 86_400_000;
-    const seen = new Set<string>();
-    const items: FatoRelevante[] = [];
 
-    for (const row of rows.slice(1)) {
-      if ((row[idx.Categoria] || "") !== "Fato Relevante") continue;
-      const delivered = (row[idx.Data_Entrega] || "").slice(0, 10);
-      const t = new Date(`${delivered}T15:00:00-03:00`).getTime();
-      if (!delivered || Number.isNaN(t) || t < cut) continue;
-      const company = titleCompany(row[idx.Nome_Companhia] || "");
-      const subject = (row[idx.Assunto] || "").trim();
-      if (!company || !subject) continue;
-      const key = `${company}|${subject}|${delivered}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      items.push({
-        id: row[idx.Protocolo_Entrega] || key,
-        company,
-        cnpj: row[idx.CNPJ_Companhia] || "",
-        subject,
-        deliveredAt: delivered,
-        group: classify(subject),
-        url: row[idx.Link_Download] || null,
-        quotes: [],
-      });
-    }
-
-    items.sort((a, b) => b.deliveredAt.localeCompare(a.deliveredAt) || a.company.localeCompare(b.company));
+    const fatoItems = collectCategory(rows, idx, "Fato Relevante");
+    const comunicadoItems = collectCategory(rows, idx, "Comunicado ao Mercado");
+    const all = [...fatoItems, ...comunicadoItems];
 
     const tickerByCnpj = await loadB3TickerMap();
     const symbols = Array.from(
       new Set(
-        items
+        all
           .map((item) => tickerByCnpj.get(normalizeCnpj(item.cnpj)))
           .filter((symbol): symbol is string => Boolean(symbol)),
       ),
     );
-    const book = await loadQuotes(symbols, 160);
-    for (const item of items) {
+    const book = await loadQuotes(symbols, 220);
+    for (const item of all) {
       const symbol = tickerByCnpj.get(normalizeCnpj(item.cnpj));
       if (!symbol) continue;
       item.quotes = [book.get(symbol) ?? { ticker: symbol, changePct: null }];
     }
 
-    const counts: FatosFeed["counts"] = {
-      all: items.length,
-      ma: 0,
-      dividend: 0,
-      offer: 0,
-      buyback: 0,
-      reorg: 0,
-      gov: 0,
-      earnings: 0,
-      clarify: 0,
-      other: 0,
-    };
-    for (const item of items) counts[item.group] += 1;
-
     return {
-      items,
-      windowDays: WINDOW_DAYS,
-      asOf: new Date().toISOString(),
-      companyCount: new Set(items.map((item) => item.company)).size,
-      counts,
+      fatos: toFeed(fatoItems),
+      comunicados: toFeed(comunicadoItems),
     };
   } catch {
     return empty;
   }
+}
+
+export async function loadFatosRelevantes(): Promise<FatosFeed> {
+  return (await loadCvmIpeDesk()).fatos;
 }

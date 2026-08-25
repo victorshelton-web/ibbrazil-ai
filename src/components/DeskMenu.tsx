@@ -2,7 +2,7 @@
 
 import { useI18n } from "./LocaleProvider";
 
-export type DeskView = "news" | "fatos";
+export type DeskView = "news" | "fatos" | "comunicados" | "cade";
 
 export function DeskMenu({
   view,
@@ -21,6 +21,8 @@ export function DeskMenu({
             [
               { id: "news", label: t.menuNews },
               { id: "fatos", label: t.menuFatos },
+              { id: "comunicados", label: t.menuComunicados },
+              { id: "cade", label: t.menuCade },
             ] as const
           ).map((item, idx) => (
             <button
@@ -30,7 +32,7 @@ export function DeskMenu({
               aria-selected={view === item.id}
               onClick={() => onChange(item.id)}
               className={`h-10 px-3 font-mono text-[11px] tracking-wide uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)] ${
-                idx === 1 ? "border-l border-border" : ""
+                idx > 0 ? "border-l border-border" : ""
               } ${
                 view === item.id
                   ? "bg-[color:var(--gold)] text-[#14140f]"

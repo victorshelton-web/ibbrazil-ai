@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { loadFatosRelevantes } from "@/lib/fatos-relevantes";
+import { loadCadeFeed } from "@/lib/cade";
+import { loadCvmIpeDesk } from "@/lib/fatos-relevantes";
 import { buildFeed } from "@/lib/feed";
 import { loadMarketTape } from "@/lib/market-tape";
 import { SeoJsonLd } from "@/components/SeoJsonLd";
@@ -31,10 +32,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [{ items, stats }, tape, fatos] = await Promise.all([
+  const [{ items, stats }, tape, ipe, cade] = await Promise.all([
     buildFeed(),
     loadMarketTape(),
-    loadFatosRelevantes(),
+    loadCvmIpeDesk(),
+    loadCadeFeed(),
   ]);
   return (
     <>
@@ -44,7 +46,9 @@ export default async function Home() {
         stats={stats}
         windowLabel={windowBounds(stats.lastUpdatedIso)}
         tape={tape}
-        fatos={fatos}
+        fatos={ipe.fatos}
+        comunicados={ipe.comunicados}
+        cade={cade}
       />
     </>
   );
