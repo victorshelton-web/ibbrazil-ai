@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { buildFeed } from "@/lib/feed";
+import { loadMarketTape } from "@/lib/market-tape";
 import { SeoJsonLd } from "@/components/SeoJsonLd";
 import { TerminalApp } from "@/components/TerminalApp";
 import { buildPageMetadata } from "@/lib/seo";
@@ -29,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const { items, stats } = await buildFeed();
+  const [{ items, stats }, tape] = await Promise.all([buildFeed(), loadMarketTape()]);
   return (
     <>
       <SeoJsonLd items={items} stats={stats} />
@@ -37,6 +38,7 @@ export default async function Home() {
         items={items}
         stats={stats}
         windowLabel={windowBounds(stats.lastUpdatedIso)}
+        tape={tape}
       />
     </>
   );

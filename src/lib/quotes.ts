@@ -55,8 +55,16 @@ export function extractSymbols(name: string, extra?: string | null): string[] {
   return unique(found);
 }
 
-async function fetchYahooQuote(symbol: string): Promise<PartyQuote> {
+export type YahooSnapshot = {
+  ticker: string;
+  price: number | null;
+  changePct: number | null;
+  currency: string | null;
+};
+
+export async function fetchYahooQuote(symbol: string): Promise<YahooSnapshot> {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
+  const empty: YahooSnapshot = { ticker: symbol, price: null, changePct: null, currency: null };
   const res = await fetch(url, {
     next: { revalidate: 120 },
     headers: {
@@ -64,29 +72,26 @@ async function fetchYahooQuote(symbol: string): Promise<PartyQuote> {
       Accept: "application/json",
     },
   });
-  if (!res.ok) return { ticker: symbol, changePct: null };
+  if (!res.ok) return empty;
 
   const data = (await res.json()) as {
     chart?: {
       result?: Array<{
-        meta?: { regularMarketPrice?: number };
+        meta?: { regularMarketPrice?: number; currency?: string };
         indicators?: { quote?: Array<{ close?: Array<number | null> }> };
       }>;
     };
   };
   const row = data.chart?.result?.[0];
-  const price = row?.meta?.regularMarketPrice;
+  const price = row?.meta?.regularMarketPrice ?? null;
+  const currency = row?.meta?.currency ?? null;
   const closes = (row?.indicators?.quote?.[0]?.close || []).filter(
     (n): n is number => typeof n === "number" && Number.isFinite(n),
   );
   const prev = closes.length >= 2 ? closes[closes.length - 2] : null;
-  if (price == null || prev == null || prev === 0) {
-    return { ticker: symbol, changePct: null };
-  }
-  return {
-    ticker: symbol,
-    changePct: ((price - prev) / prev) * 100,
-  };
+  const changePct =
+    price != null && prev != null && prev !== 0 ? ((price - prev) / prev) * 100 : null;
+  return { ticker: symbol, price, changePct, currency };
 }
 
 export async function loadQuotes(symbols: string[]): Promise<Map<string, PartyQuote>> {
@@ -95,7 +100,8 @@ export async function loadQuotes(symbols: string[]): Promise<Map<string, PartyQu
   const rows = await Promise.all(
     uniq.map(async (symbol) => {
       try {
-        return await fetchYahooQuote(symbol);
+        const snap = await fetchYahooQuote(symbol);
+        return { ticker: snap.ticker, changePct: snap.changePct };
       } catch {
         return { ticker: symbol, changePct: null };
       }

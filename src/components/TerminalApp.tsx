@@ -1,8 +1,10 @@
 "use client";
 
+import type { MarketTape } from "@/lib/market-tape";
 import type { FeedItem, FeedStats } from "@/lib/types";
 import { LangToggle } from "./LangToggle";
 import { LocaleProvider, useI18n } from "./LocaleProvider";
+import { MarketTapeBar } from "./MarketTapeBar";
 import { SponsorBanner } from "./SponsorBanner";
 import { RefreshTape } from "./RefreshTape";
 import { StatsStrip } from "./StatsStrip";
@@ -12,15 +14,18 @@ function Shell({
   items,
   stats,
   windowLabel,
+  tape,
 }: {
   items: FeedItem[];
   stats: FeedStats;
   windowLabel: string;
+  tape: MarketTape;
 }) {
   const { t } = useI18n();
 
   return (
     <div className="min-h-full bg-background text-foreground">
+      <MarketTapeBar tape={tape} />
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-4 md:px-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -80,6 +85,7 @@ export function TerminalApp(props: {
   items: FeedItem[];
   stats: FeedStats;
   windowLabel: string;
+  tape: MarketTape;
 }) {
   return (
     <LocaleProvider>
