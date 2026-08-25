@@ -59,8 +59,8 @@ function Shell({
       <StatsStrip stats={stats} />
 
       <main className="mx-auto max-w-[1400px] space-y-8 px-4 py-4 md:px-6">
-        <FatosRelevantes feed={fatos} />
         <TerminalBoard items={items} />
+        <FatosRelevantes feed={fatos} />
       </main>
 
       <footer className="border-t border-border">

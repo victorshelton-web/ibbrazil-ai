@@ -1,4 +1,7 @@
-import { inflateRawSync } from "node:zlib";
+import { loadB3TickerMap, normalizeCnpj } from "./b3-tickers";
+import { loadQuotes } from "./quotes";
+import type { PartyQuote } from "./types";
+import { unzipFirst } from "./zip-csv";
 
 export type FatoGroup =
   | "ma"
@@ -19,6 +22,7 @@ export type FatoRelevante = {
   deliveredAt: string;
   group: FatoGroup;
   url: string | null;
+  quotes: PartyQuote[];
 };
 
 export type FatosFeed = {
@@ -76,17 +80,7 @@ function titleCompany(name: string): string {
 }
 
 function unzipCsv(buf: Buffer): string {
-  if (buf.readUInt32LE(0) !== 0x04034b50) {
-    throw new Error("ipe_zip_invalid");
-  }
-  const method = buf.readUInt16LE(8);
-  const compSize = buf.readUInt32LE(18);
-  const nameLen = buf.readUInt16LE(26);
-  const extraLen = buf.readUInt16LE(28);
-  const start = 30 + nameLen + extraLen;
-  const data = buf.subarray(start, start + (compSize || buf.length - start));
-  const raw = method === 0 ? data : inflateRawSync(data);
-  return raw.toString("latin1");
+  return unzipFirst(buf);
 }
 
 function parseCsv(text: string): string[][] {
@@ -157,10 +151,26 @@ export async function loadFatosRelevantes(): Promise<FatosFeed> {
         deliveredAt: delivered,
         group: classify(subject),
         url: row[idx.Link_Download] || null,
+        quotes: [],
       });
     }
 
     items.sort((a, b) => b.deliveredAt.localeCompare(a.deliveredAt) || a.company.localeCompare(b.company));
+
+    const tickerByCnpj = await loadB3TickerMap();
+    const symbols = Array.from(
+      new Set(
+        items
+          .map((item) => tickerByCnpj.get(normalizeCnpj(item.cnpj)))
+          .filter((symbol): symbol is string => Boolean(symbol)),
+      ),
+    );
+    const book = await loadQuotes(symbols, 160);
+    for (const item of items) {
+      const symbol = tickerByCnpj.get(normalizeCnpj(item.cnpj));
+      if (!symbol) continue;
+      item.quotes = [book.get(symbol) ?? { ticker: symbol, changePct: null }];
+    }
 
     const counts: FatosFeed["counts"] = {
       all: items.length,

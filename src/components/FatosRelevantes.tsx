@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { FatoGroup, FatosFeed } from "@/lib/fatos-relevantes";
 import { useI18n } from "./LocaleProvider";
+import { PartyName } from "./PartyName";
 
 const GROUPS: FatoGroup[] = [
   "ma",
@@ -59,7 +60,8 @@ export function FatosRelevantes({ feed }: { feed: FatosFeed }) {
     return feed.items.filter((item) => {
       if (group !== "all" && item.group !== group) return false;
       if (!q) return true;
-      return `${item.company} ${item.subject}`.toLowerCase().includes(q);
+      const tickers = (item.quotes || []).map((q) => q.ticker.replace(/\.SA$/, "")).join(" ");
+      return `${item.company} ${item.subject} ${tickers}`.toLowerCase().includes(q);
     });
   }, [feed.items, group, query]);
 
@@ -144,7 +146,9 @@ export function FatosRelevantes({ feed }: { feed: FatosFeed }) {
                   className="grid gap-1 border border-border bg-background/40 px-3 py-2 md:grid-cols-[minmax(0,220px)_1fr_auto] md:items-start md:gap-4"
                 >
                   <div>
-                    <p className="text-sm font-medium text-zinc-100">{item.company}</p>
+                    <div className="text-sm font-medium text-zinc-100">
+                      <PartyName name={item.company} quotes={item.quotes} />
+                    </div>
                     <p className="font-mono text-[10px] text-[color:var(--gold)] uppercase">
                       {groupLabel(item.group, locale)}
                     </p>

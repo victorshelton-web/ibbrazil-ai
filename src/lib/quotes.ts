@@ -94,19 +94,27 @@ export async function fetchYahooQuote(symbol: string): Promise<YahooSnapshot> {
   return { ticker: symbol, price, changePct, currency };
 }
 
-export async function loadQuotes(symbols: string[]): Promise<Map<string, PartyQuote>> {
+export async function loadQuotes(
+  symbols: string[],
+  limit = 16,
+): Promise<Map<string, PartyQuote>> {
   const map = new Map<string, PartyQuote>();
-  const uniq = unique(symbols).slice(0, 16);
-  const rows = await Promise.all(
-    uniq.map(async (symbol) => {
-      try {
-        const snap = await fetchYahooQuote(symbol);
-        return { ticker: snap.ticker, changePct: snap.changePct };
-      } catch {
-        return { ticker: symbol, changePct: null };
-      }
-    }),
-  );
+  const uniq = unique(symbols).slice(0, limit);
+  const rows: PartyQuote[] = [];
+  const batchSize = 12;
+  for (let i = 0; i < uniq.length; i += batchSize) {
+    const batch = await Promise.all(
+      uniq.slice(i, i + batchSize).map(async (symbol) => {
+        try {
+          const snap = await fetchYahooQuote(symbol);
+          return { ticker: snap.ticker, changePct: snap.changePct };
+        } catch {
+          return { ticker: symbol, changePct: null };
+        }
+      }),
+    );
+    rows.push(...batch);
+  }
   for (const row of rows) map.set(row.ticker, row);
   return map;
 }
