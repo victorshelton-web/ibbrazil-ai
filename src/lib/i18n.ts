@@ -108,6 +108,7 @@ export const copy = {
     seeMore: "See more",
     seeLess: "See less",
     tickerClear: "Clear ticker",
+    openSource: "Open source",
   },
   pt: {
     kicker: "Terminal de M&A / Notícias",
@@ -216,6 +217,7 @@ export const copy = {
     seeMore: "Ver mais",
     seeLess: "Ver menos",
     tickerClear: "Limpar ticker",
+    openSource: "Abrir fonte",
   },
 } as const;
 

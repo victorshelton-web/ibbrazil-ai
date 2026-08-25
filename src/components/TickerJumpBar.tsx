@@ -14,7 +14,7 @@ const TABS: { id: DeskView; labelKey: "menuNews" | "menuFatos" | "menuComunicado
 
 export function TickerJumpBar() {
   const { t } = useI18n();
-  const { tickerQuery, hits, view, setView, clearTicker } = useDesk();
+  const { tickerQuery, hits, sources, view, setView, clearTicker } = useDesk();
   if (!tickerQuery) return null;
 
   return (
@@ -25,22 +25,35 @@ export function TickerJumpBar() {
           {TABS.map((tab) => {
             const count = hits[tab.id];
             const active = view === tab.id;
+            const source = sources[tab.id];
             return (
-              <button
-                key={tab.id}
-                type="button"
-                disabled={count === 0}
-                onClick={() => setView(tab.id)}
-                className={`h-7 rounded-sm border px-2 font-mono text-[10px] uppercase ${
-                  count === 0
-                    ? "cursor-not-allowed border-border text-muted-foreground opacity-50"
-                    : active
-                      ? "border-[color:var(--gold)] bg-[color:var(--gold)] text-[#14140f]"
-                      : "border-border text-zinc-300 hover:bg-muted"
-                }`}
-              >
-                {t[tab.labelKey]} {count}
-              </button>
+              <span key={tab.id} className="inline-flex overflow-hidden rounded-sm border border-border">
+                <button
+                  type="button"
+                  disabled={count === 0}
+                  onClick={() => setView(tab.id)}
+                  className={`h-7 px-2 font-mono text-[10px] uppercase ${
+                    count === 0
+                      ? "cursor-not-allowed text-muted-foreground opacity-50"
+                      : active
+                        ? "bg-[color:var(--gold)] text-[#14140f]"
+                        : "text-zinc-300 hover:bg-muted"
+                  }`}
+                >
+                  {t[tab.labelKey]} {count}
+                </button>
+                {source ? (
+                  <a
+                    href={source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={t.openSource}
+                    className="inline-flex h-7 items-center border-l border-border px-1.5 font-mono text-[10px] text-[color:var(--live)] hover:bg-muted"
+                  >
+                    ↗
+                  </a>
+                ) : null}
+              </span>
             );
           })}
         </div>

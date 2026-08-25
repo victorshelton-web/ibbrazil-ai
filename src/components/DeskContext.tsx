@@ -7,6 +7,7 @@ import type { FeedItem, PartyQuote } from "@/lib/types";
 import type { DeskView } from "./DeskMenu";
 
 export type TickerHits = Record<DeskView, number>;
+export type TickerSources = Record<DeskView, string | null>;
 
 type DeskCatalog = {
   items: FeedItem[];
@@ -20,6 +21,7 @@ type DeskCtx = {
   setView: (view: DeskView) => void;
   tickerQuery: string;
   hits: TickerHits;
+  sources: TickerSources;
   openTicker: (ticker: string) => void;
   clearTicker: () => void;
 };
@@ -57,25 +59,38 @@ function newsMatches(item: FeedItem, ticker: string): boolean {
   return [item.headline, item.acquirer, item.target, item.highlights].join(" ").toLowerCase().includes(q);
 }
 
+function fatoMatches(item: { quotes?: PartyQuote[]; company: string; subject: string }, ticker: string) {
+  return (
+    quotesMatchTicker(item.quotes, ticker) ||
+    `${item.company} ${item.subject}`.toLowerCase().includes(tickerKey(ticker))
+  );
+}
+
+function cadeMatches(item: { quotes?: PartyQuote[]; title: string; summary: string }, ticker: string) {
+  return (
+    quotesMatchTicker(item.quotes, ticker) ||
+    `${item.title} ${item.summary}`.toLowerCase().includes(tickerKey(ticker))
+  );
+}
+
 function countHits(catalog: DeskCatalog, ticker: string): TickerHits {
   if (!ticker) return { news: 0, fatos: 0, comunicados: 0, cade: 0 };
   return {
     news: catalog.items.filter((item) => newsMatches(item, ticker)).length,
-    fatos: catalog.fatos.items.filter(
-      (item) =>
-        quotesMatchTicker(item.quotes, ticker) ||
-        `${item.company} ${item.subject}`.toLowerCase().includes(tickerKey(ticker)),
-    ).length,
-    comunicados: catalog.comunicados.items.filter(
-      (item) =>
-        quotesMatchTicker(item.quotes, ticker) ||
-        `${item.company} ${item.subject}`.toLowerCase().includes(tickerKey(ticker)),
-    ).length,
-    cade: catalog.cade.items.filter(
-      (item) =>
-        quotesMatchTicker(item.quotes, ticker) ||
-        `${item.title} ${item.summary}`.toLowerCase().includes(tickerKey(ticker)),
-    ).length,
+    fatos: catalog.fatos.items.filter((item) => fatoMatches(item, ticker)).length,
+    comunicados: catalog.comunicados.items.filter((item) => fatoMatches(item, ticker)).length,
+    cade: catalog.cade.items.filter((item) => cadeMatches(item, ticker)).length,
+  };
+}
+
+function firstSources(catalog: DeskCatalog, ticker: string): TickerSources {
+  if (!ticker) return { news: null, fatos: null, comunicados: null, cade: null };
+  return {
+    news: catalog.items.find((item) => newsMatches(item, ticker) && item.sourceUrl)?.sourceUrl ?? null,
+    fatos: catalog.fatos.items.find((item) => fatoMatches(item, ticker) && item.url)?.url ?? null,
+    comunicados:
+      catalog.comunicados.items.find((item) => fatoMatches(item, ticker) && item.url)?.url ?? null,
+    cade: catalog.cade.items.find((item) => cadeMatches(item, ticker) && item.url)?.url ?? null,
   };
 }
 
@@ -99,6 +114,7 @@ export function DeskProvider({
   const [tickerQuery, setTickerQuery] = useState("");
 
   const hits = useMemo(() => countHits(catalog, tickerQuery), [catalog, tickerQuery]);
+  const sources = useMemo(() => firstSources(catalog, tickerQuery), [catalog, tickerQuery]);
 
   const openTicker = useCallback(
     (ticker: string) => {
@@ -115,8 +131,8 @@ export function DeskProvider({
   const clearTicker = useCallback(() => setTickerQuery(""), []);
 
   const value = useMemo(
-    () => ({ view, setView, tickerQuery, hits, openTicker, clearTicker }),
-    [view, tickerQuery, hits, openTicker, clearTicker],
+    () => ({ view, setView, tickerQuery, hits, sources, openTicker, clearTicker }),
+    [view, tickerQuery, hits, sources, openTicker, clearTicker],
   );
 
   return <DeskCtx.Provider value={value}>{children}</DeskCtx.Provider>;

@@ -12,6 +12,7 @@ import {
 } from "@/lib/format";
 import { useI18n } from "./LocaleProvider";
 import { PartyName } from "./PartyName";
+import { SourceLink } from "./SourceLink";
 
 export function DealCard({
   item,
@@ -35,7 +36,9 @@ export function DealCard({
           <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
             {item.sector} · {item.status}
           </p>
-          <h3 className="mt-0.5 text-sm font-medium text-zinc-100">{item.headline}</h3>
+          <h3 className="mt-0.5 text-sm font-medium">
+            <SourceLink href={item.sourceUrl}>{item.headline}</SourceLink>
+          </h3>
         </div>
         <span
           className={`inline-flex h-5 w-fit shrink-0 items-center rounded-sm border px-2 py-0.5 font-mono text-[10px] tracking-wide uppercase ${provenanceClass(item.provenance)}`}

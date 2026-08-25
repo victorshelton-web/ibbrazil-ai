@@ -5,6 +5,7 @@ import type { FatoGroup, FatosFeed } from "@/lib/fatos-relevantes";
 import { quotesMatchTicker, useDesk } from "./DeskContext";
 import { useI18n } from "./LocaleProvider";
 import { PartyName } from "./PartyName";
+import { SourceLink } from "./SourceLink";
 
 const GROUPS: FatoGroup[] = [
   "ma",
@@ -186,7 +187,12 @@ export function FatosRelevantes({
                       {groupLabel(item.group, locale)}
                     </p>
                   </div>
-                  <p className="text-xs leading-relaxed text-zinc-300">{item.subject}</p>
+                  <SourceLink
+                    href={item.url}
+                    className="text-xs leading-relaxed text-zinc-300 underline-offset-2 hover:text-[color:var(--gold)] hover:underline"
+                  >
+                    {item.subject}
+                  </SourceLink>
                   {item.url ? (
                     <a
                       href={item.url}

@@ -5,6 +5,7 @@ import type { CadeFeed, CadeGroup } from "@/lib/cade";
 import { quotesMatchTicker, useDesk } from "./DeskContext";
 import { useI18n } from "./LocaleProvider";
 import { QuoteLine } from "./PartyName";
+import { SourceLink } from "./SourceLink";
 
 const GROUPS: CadeGroup[] = ["approved", "restricted", "review", "agenda", "other"];
 
@@ -157,7 +158,7 @@ export function CadeBoard({ feed }: { feed: CadeFeed }) {
                     ) : null}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-zinc-100">{item.title}</p>
+                    <SourceLink href={item.url}>{item.title}</SourceLink>
                     <QuoteLine quotes={item.quotes} />
                     {item.summary ? (
                       <p className="mt-1 text-xs leading-relaxed text-zinc-300">{item.summary}</p>
