@@ -189,6 +189,7 @@ export function FatosRelevantes({
                   </div>
                   <SourceLink
                     href={item.url}
+                    type={item.url ? "application/pdf" : undefined}
                     className="text-xs leading-relaxed text-zinc-300 underline-offset-2 hover:text-[color:var(--gold)] hover:underline"
                   >
                     {item.subject}
@@ -198,9 +199,10 @@ export function FatosRelevantes({
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      type="application/pdf"
                       className="font-mono text-[11px] text-[color:var(--live)] underline-offset-2 hover:underline"
                     >
-                      CVM
+                      PDF
                     </a>
                   ) : null}
                 </li>

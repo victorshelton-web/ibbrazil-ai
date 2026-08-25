@@ -1,4 +1,5 @@
 import { loadB3TickerBook, normalizeCnpj } from "./b3-tickers";
+import { toCvmPdfHref } from "./cvm-pdf";
 import { loadQuotes } from "./quotes";
 import type { PartyQuote } from "./types";
 import { unzipFirst } from "./zip-csv";
@@ -138,7 +139,7 @@ function collectCategory(
       subject,
       deliveredAt: delivered,
       group: classify(subject),
-      url: row[idx.Link_Download] || null,
+      url: toCvmPdfHref(row[idx.Link_Download] || null),
       quotes: [],
     });
   }
