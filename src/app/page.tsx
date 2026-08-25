@@ -2,29 +2,42 @@ import type { Metadata } from "next";
 import { buildFeed } from "@/lib/feed";
 import { StatsStrip } from "@/components/StatsStrip";
 import { TerminalBoard } from "@/components/TerminalBoard";
+import { RefreshTape } from "@/components/RefreshTape";
 import { formatBrtLong } from "@/lib/format";
 
 export const revalidate = 300;
+
+function windowBounds(iso: string) {
+  const end = new Date(iso);
+  const start = new Date(end.getTime() - 24 * 3_600_000);
+  const fmt = (d: Date) =>
+    d.toLocaleString("en-GB", {
+      timeZone: "America/Toronto",
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  return `${fmt(start)} America/Toronto — ${fmt(end)} America/Toronto`;
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const { stats } = await buildFeed();
   const asOf = formatBrtLong(stats.lastUpdatedIso);
   return {
-    title: `Brazil + Global M&A Terminal — ${asOf} BRT`,
+    title: `Brazil + Global M&A Terminal — ${asOf}`,
     description:
-      "Operator dashboard of Brazilian and international M&A plus major Brazilian corporate news. Live rows marked green.",
+      "Operator dashboard of Brazilian and international M&A plus major Brazilian corporate news.",
     openGraph: {
-      title: `ibbrazil.ai — Brazil + Global M&A Terminal`,
+      title: "ibbrazil.ai — Brazil + Global M&A Terminal",
       description:
         "Brazilian and international M&A tape with major corporate news for the current window.",
       url: "https://ibbrazil.ai",
       siteName: "ibbrazil.ai",
       type: "website",
-    },
-    twitter: {
-      card: "summary",
-      title: "ibbrazil.ai — Brazil + Global M&A Terminal",
-      description: "Brazilian and international M&A tape with major corporate news.",
     },
     alternates: { canonical: "https://ibbrazil.ai" },
   };
@@ -32,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const { items, stats } = await buildFeed();
-  const windowLabel = formatBrtLong(stats.lastUpdatedIso);
+  const window = windowBounds(stats.lastUpdatedIso);
 
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -43,53 +56,44 @@ export default async function Home() {
               <p className="font-mono text-[10px] tracking-[0.22em] text-[color:var(--gold)] uppercase">
                 M&A / Business News Terminal
               </p>
-              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-100 md:text-3xl">
-                <span className="text-[color:var(--gold)]">ibbrazil.ai</span>
-                <span className="text-zinc-400"> — Brazil + Global M&A</span>
+              <h1 className="mt-1 text-xl font-semibold tracking-tight text-zinc-100 md:text-2xl">
+                Brazil + Global deal tape
               </h1>
-              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-                Some rows are estimated or filing-derived — not live closed deals. Live rows are
-                marked green. Placeholders are never shown as closed transactions.
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+                Operator view of domestic Brazil M&A and VC, major international transactions,
+                and market-moving Brazilian corporate news. Window {window}.
               </p>
             </div>
-            <div className="flex items-center gap-2 border border-border bg-card px-3 py-2">
-              <span
-                className={`live-dot inline-block size-2 rounded-full ${
-                  stats.apiConnected
-                    ? "bg-[color:var(--live)]"
-                    : "bg-[color:var(--needs-api)]"
-                }`}
-                aria-hidden
-              />
-              <div>
-                <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-                  Tape status
-                </p>
-                <p className="font-mono text-xs text-zinc-200">
-                  {stats.apiConnected ? "Global feed live" : "Global feed offline"} ·{" "}
-                  {windowLabel} BRT
-                </p>
-              </div>
-            </div>
+            <RefreshTape />
           </div>
         </div>
       </header>
 
+      <div
+        role="status"
+        className="border-b border-[color:var(--estimated)]/35 bg-[color:var(--estimated)]/8"
+      >
+        <p className="mx-auto max-w-[1400px] px-4 py-2 font-mono text-[11px] text-[color:var(--estimated)] md:px-6">
+          Some rows are filing-derived or curated — not live closed deals. Live rows are marked
+          green. Placeholders are never a closed deal.
+        </p>
+      </div>
+
       <StatsStrip stats={stats} />
 
-      <main className="mx-auto max-w-[1400px] px-4 py-6 md:px-6">
+      <main className="mx-auto max-w-[1400px] px-4 py-4 md:px-6">
         <TerminalBoard items={items} />
       </main>
 
-      <footer className="mt-auto border-t border-border">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-1 px-4 py-4 text-[11px] text-muted-foreground md:px-6">
+      <footer className="border-t border-border">
+        <div className="mx-auto max-w-[1400px] space-y-1 px-4 py-5 text-[11px] leading-relaxed text-muted-foreground md:px-6">
           <p>
-            International prints are sourced from Financial Modeling Prep (SEC EDGAR
-            disclosures). Brazil rows are curated from public filings and press. Data may lag
-            markets; confirm against primary sources. Not investment advice. No auth, no paywall.
+            Data window: {window}. Display clocks use America/Sao_Paulo (BRT) and UTC. Window FX ~
+            {stats.fx} BRL/USD.
           </p>
-          <p className="font-mono">
-            FX {stats.fx} BRL/USD · refresh ≤5m · {stats.apiSource}
+          <p>
+            International tape from Financial Modeling Prep (SEC EDGAR). Brazil rows curated from
+            public filings and press. Confirm against primary sources. No auth, no paywall.
           </p>
         </div>
       </footer>

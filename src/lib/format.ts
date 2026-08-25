@@ -130,7 +130,7 @@ export function sectionTitle(category: FeedItem["category"]): string {
 export function sectionBlurb(category: FeedItem["category"]): string {
   switch (category) {
     case "brazil-ma":
-      return "Domestic Brazil M&A and major corporate-control events.";
+      return "Domestic Brazil M&A, VC rounds, and major corporate-control events.";
     case "international-ma":
       return "Major global M&A and high-impact corporate developments.";
     case "brazil-news":

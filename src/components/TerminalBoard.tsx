@@ -46,6 +46,9 @@ function sortItems(items: FeedItem[], sort: SortMode): FeedItem[] {
   );
 }
 
+const chip =
+  "h-7 rounded-sm border px-2.5 font-mono text-[11px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]";
+
 export function TerminalBoard({ items }: { items: FeedItem[] }) {
   const [filter, setFilter] = useState<"all" | FeedCategory>("all");
   const [query, setQuery] = useState("");
@@ -83,123 +86,116 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
   const filterLabel = FILTERS.find((f) => f.id === filter)?.label ?? "All";
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-3 border border-border bg-card/40 p-3">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap gap-1" role="tablist" aria-label="Section filter">
-            {FILTERS.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                role="tab"
-                aria-selected={filter === f.id}
-                onClick={() => startTransition(() => setFilter(f.id))}
-                className={`px-3 py-1.5 font-mono text-[11px] tracking-wide uppercase transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] ${
-                  filter === f.id
-                    ? "bg-[color:var(--gold)] text-[#0b0c0a]"
-                    : "text-muted-foreground hover:text-zinc-200"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-          <label className="flex min-w-[220px] flex-1 items-center gap-2 border border-border bg-background px-3 py-2 md:max-w-sm">
-            <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+    <div>
+      <div className="flex flex-col gap-3 border border-border bg-card/40 p-3">
+        <div role="group" aria-label="Category filter" className="flex flex-wrap gap-1.5">
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              aria-pressed={filter === f.id}
+              onClick={() => startTransition(() => setFilter(f.id))}
+              className={`${chip} ${
+                filter === f.id
+                  ? "border-[color:var(--gold)] bg-[color:var(--gold)] text-[#14140f]"
+                  : "border-border text-zinc-300 hover:bg-muted"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
+          <label className="md:col-span-4" htmlFor="tape-search">
+            <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
               Search
             </span>
             <input
+              id="tape-search"
+              type="search"
               value={query}
               onChange={(e) => startTransition(() => setQuery(e.target.value))}
-              placeholder="Acquirer, target, sector…"
-              className="w-full bg-transparent text-sm text-zinc-100 outline-none placeholder:text-muted-foreground"
+              placeholder="Acquirer, target, sector, headline"
+              className="h-8 w-full rounded-sm border border-border bg-background px-2.5 font-sans text-sm text-foreground placeholder:text-muted-foreground"
             />
           </label>
-        </div>
 
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="flex flex-col gap-1 border border-border bg-background px-3 py-2">
-            <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+          <label className="md:col-span-2" htmlFor="tape-sector">
+            <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
               Sector
             </span>
             <select
+              id="tape-sector"
               value={sector}
               onChange={(e) => startTransition(() => setSector(e.target.value))}
-              className="bg-transparent text-sm text-zinc-100 outline-none"
+              className="h-8 w-full rounded-sm border border-border bg-background px-2 font-sans text-sm text-foreground"
             >
               {sectors.map((s) => (
-                <option key={s} value={s} className="bg-[#121410] text-zinc-100">
+                <option key={s} value={s}>
                   {s === "all" ? "All sectors" : s}
                 </option>
               ))}
             </select>
           </label>
 
-          <label className="flex flex-col gap-1 border border-border bg-background px-3 py-2">
-            <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+          <label className="md:col-span-2" htmlFor="tape-value">
+            <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
               Deal value
             </span>
             <select
+              id="tape-value"
               value={valueFilter}
               onChange={(e) =>
                 startTransition(() => setValueFilter(e.target.value as ValueFilter))
               }
-              className="bg-transparent text-sm text-zinc-100 outline-none"
+              className="h-8 w-full rounded-sm border border-border bg-background px-2 font-sans text-sm text-foreground"
             >
-              <option value="any" className="bg-[#121410]">
-                Any value
-              </option>
-              <option value="lt100" className="bg-[#121410]">
-                &lt; $100m
-              </option>
-              <option value="mid" className="bg-[#121410]">
-                $100m – $1bn
-              </option>
-              <option value="gt1b" className="bg-[#121410]">
-                &gt; $1bn
-              </option>
-              <option value="undisclosed" className="bg-[#121410]">
-                Undisclosed
-              </option>
+              <option value="any">Any value</option>
+              <option value="lt100">&lt; $100m</option>
+              <option value="mid">$100m – $1bn</option>
+              <option value="gt1b">&gt; $1bn</option>
+              <option value="undisclosed">Undisclosed</option>
             </select>
           </label>
 
-          <label className="flex flex-col gap-1 border border-border bg-background px-3 py-2">
-            <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+          <label className="md:col-span-2" htmlFor="tape-sort">
+            <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
               Sort
             </span>
             <select
+              id="tape-sort"
               value={sort}
               onChange={(e) => startTransition(() => setSort(e.target.value as SortMode))}
-              className="bg-transparent text-sm text-zinc-100 outline-none"
+              className="h-8 w-full rounded-sm border border-border bg-background px-2 font-sans text-sm text-foreground"
             >
-              <option value="newest" className="bg-[#121410]">
-                Newest
-              </option>
-              <option value="value-desc" className="bg-[#121410]">
-                Value desc
-              </option>
-              <option value="value-asc" className="bg-[#121410]">
-                Value asc
-              </option>
+              <option value="newest">Newest</option>
+              <option value="value-desc">Value desc</option>
+              <option value="value-asc">Value asc</option>
             </select>
           </label>
 
-          <div className="flex flex-col gap-1 border border-border bg-background px-3 py-2">
-            <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+          <div className="md:col-span-2">
+            <span className="mb-1 block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
               M&A view
             </span>
-            <div className="flex gap-1" role="group" aria-label="View mode">
-              {(["cards", "table"] as ViewMode[]).map((mode) => (
+            <div
+              role="group"
+              aria-label="Cards or table"
+              className="flex h-8 overflow-hidden rounded-sm border border-border"
+            >
+              {(["cards", "table"] as ViewMode[]).map((mode, idx) => (
                 <button
                   key={mode}
                   type="button"
                   aria-pressed={view === mode}
                   onClick={() => startTransition(() => setView(mode))}
-                  className={`px-3 py-1 font-mono text-[11px] tracking-wide uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)] ${
+                  className={`h-full flex-1 font-mono text-[11px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)] ${
+                    idx === 1 ? "border-l border-border" : ""
+                  } ${
                     view === mode
-                      ? "bg-[color:var(--gold)] text-[#0b0c0a]"
-                      : "text-muted-foreground hover:text-zinc-200"
+                      ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)]"
+                      : "text-zinc-300 hover:bg-muted"
                   }`}
                 >
                   {mode === "cards" ? "Cards" : "Table"}
@@ -208,42 +204,51 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
             </div>
           </div>
         </div>
+
+        <p
+          className={`font-mono text-[11px] text-[color:var(--gold)] ${pending ? "opacity-70" : ""}`}
+        >
+          Showing {filtered.length} row{filtered.length === 1 ? "" : "s"} · {filterLabel} · {view}{" "}
+          view
+        </p>
       </div>
 
-      <p className={`font-mono text-[11px] text-muted-foreground ${pending ? "opacity-60" : ""}`}>
-        Showing {filtered.length} rows · {filterLabel} · {view} view
-      </p>
-
       {sections.map((section, idx) => (
-        <section key={section.cat} className="space-y-3">
-          <header className="space-y-1">
-            <p className="font-mono text-[10px] tracking-[0.22em] text-[color:var(--gold)] uppercase">
-              Section {String(idx + 1).padStart(2, "0")}
+        <section
+          key={section.cat}
+          aria-labelledby={section.cat}
+          className="mt-8"
+        >
+          <div className="mb-3 flex items-end justify-between gap-3 border-b border-border pb-2">
+            <div>
+              <p className="font-mono text-[10px] tracking-[0.2em] text-[color:var(--gold)] uppercase">
+                Section {String(idx + 1).padStart(2, "0")}
+              </p>
+              <h2 id={section.cat} className="text-lg font-semibold text-zinc-100">
+                {sectionTitle(section.cat)}
+              </h2>
+              <p className="text-xs text-muted-foreground">{sectionBlurb(section.cat)}</p>
+            </div>
+            <p className="font-mono text-[11px] text-muted-foreground">
+              {section.rows.length} row{section.rows.length === 1 ? "" : "s"}
             </p>
-            <h2 className="text-xl font-semibold tracking-tight text-zinc-100 md:text-2xl">
-              {sectionTitle(section.cat)}
-            </h2>
-            <p className="max-w-3xl text-sm text-muted-foreground">
-              {sectionBlurb(section.cat)}
-            </p>
-            <p className="font-mono text-[10px] text-muted-foreground">
-              {section.rows.length} rows
-            </p>
-          </header>
+          </div>
 
           {view === "table" ? (
             <DealsTable rows={section.rows} caption={sectionTitle(section.cat)} />
           ) : (
-            <div className="grid gap-3">
+            <ul className="grid grid-cols-1 gap-2 xl:grid-cols-2">
               {section.rows.map((item) => (
-                <DealCard key={item.id} item={item} />
+                <li key={item.id}>
+                  <DealCard item={item} />
+                </li>
               ))}
               {section.rows.length === 0 ? (
-                <p className="border border-dashed border-border px-3 py-6 text-sm text-muted-foreground">
+                <li className="border border-dashed border-border px-3 py-6 text-sm text-muted-foreground xl:col-span-2">
                   No rows in this filter.
-                </p>
+                </li>
               ) : null}
-            </div>
+            </ul>
           )}
         </section>
       ))}

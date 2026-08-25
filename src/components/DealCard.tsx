@@ -11,23 +11,25 @@ import {
 
 export function DealCard({ item }: { item: FeedItem }) {
   const labels = partyLabels(item.kind);
+  const dashed = item.provenance === "needs-api" || item.provenance === "estimated";
 
   return (
-    <article className="deal-card border border-border bg-card/80 backdrop-blur-sm transition-[border-color,transform] duration-300 hover:border-[color:var(--gold)]/40">
+    <article
+      className={`border border-border bg-card/60 ${dashed ? "border-dashed" : ""}`}
+    >
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-border px-3 py-2">
-        <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-          {item.sector} · {item.status}
-        </p>
+        <div className="min-w-0">
+          <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+            {item.sector} · {item.status}
+          </p>
+          <h3 className="mt-0.5 text-sm font-medium text-zinc-100">{item.headline}</h3>
+        </div>
         <span
-          className={`inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[10px] tracking-wide uppercase ${provenanceClass(item.provenance)}`}
+          className={`inline-flex h-5 w-fit shrink-0 items-center rounded-sm border px-2 py-0.5 font-mono text-[10px] tracking-wide uppercase ${provenanceClass(item.provenance)}`}
         >
           {provenanceLabel(item.provenance)}
         </span>
       </div>
-
-      <h3 className="px-3 pt-3 text-base font-medium leading-snug text-zinc-100 md:text-lg">
-        {item.headline}
-      </h3>
 
       <dl className="grid grid-cols-2 gap-x-3 gap-y-2 px-3 py-2 text-xs md:grid-cols-4">
         <div>
@@ -48,7 +50,7 @@ export function DealCard({ item }: { item: FeedItem }) {
         </div>
         <div>
           <dt className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-            {item.kind === "news" ? "Deal value" : "Est. deal value"}
+            Est. deal value
           </dt>
           <dd className="mt-0.5 font-mono text-[color:var(--gold)]">
             {item.kind === "news" ? "n/a — news" : formatMoney(item.valueUsd, item.valueBrl)}
@@ -65,32 +67,33 @@ export function DealCard({ item }: { item: FeedItem }) {
       </dl>
 
       <details className="border-t border-border px-3 py-2">
-        <summary className="cursor-pointer font-mono text-[11px] text-[color:var(--gold)] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--gold)]">
+        <summary className="cursor-pointer font-mono text-[11px] text-[color:var(--gold)] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]">
           Highlights & source
         </summary>
-        <div className="mt-2 space-y-2 pb-1 text-sm leading-relaxed text-zinc-300">
+        <div className="mt-2 space-y-2 text-xs leading-relaxed text-zinc-300">
           <p>{item.highlights}</p>
           {item.valueNote ? (
-            <p className="text-xs text-muted-foreground">{item.valueNote}</p>
+            <p className="text-muted-foreground">{item.valueNote}</p>
           ) : null}
-          <p className="font-mono text-[10px] text-muted-foreground">
-            {formatBrtLong(item.publishedAt)} BRT · {formatUtcLong(item.publishedAt)} UTC
+          <p className="font-mono text-[11px]">
+            Source:{" "}
+            {item.sourceUrl ? (
+              <a
+                href={item.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[color:var(--live)] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--live)]"
+              >
+                {item.sourceName}
+              </a>
+            ) : (
+              <span className="text-muted-foreground">
+                {item.sourceName} — no public URL
+              </span>
+            )}
           </p>
           <p className="font-mono text-[10px] text-muted-foreground">
-            Source: {item.sourceName}
-            {item.sourceUrl ? (
-              <>
-                {" · "}
-                <a
-                  className="text-[color:var(--gold)] underline-offset-2 hover:underline"
-                  href={item.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  open filing / article
-                </a>
-              </>
-            ) : null}
+            {formatBrtLong(item.publishedAt)} BRT · {formatUtcLong(item.publishedAt)} UTC
           </p>
         </div>
       </details>
