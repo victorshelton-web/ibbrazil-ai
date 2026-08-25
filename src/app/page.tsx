@@ -65,10 +65,10 @@ export default async function Home() {
                 and market-moving Brazilian corporate news. Window {window}.
               </p>
             </div>
-            <div className="flex flex-col items-end gap-2">
-              <LifetimeSponsor compact />
-              <RefreshTape />
-            </div>
+            <RefreshTape />
+          </div>
+          <div className="flex w-full justify-center">
+            <LifetimeSponsor compact />
           </div>
         </div>
       </header>
@@ -97,7 +97,16 @@ export default async function Home() {
           </p>
           <p>
             International tape from Financial Modeling Prep (SEC EDGAR). Brazil rows curated from
-            public filings and press. Confirm against primary sources. No auth, no paywall.
+            public filings and press. Confirm against primary sources. Terminal patrocinado pela{" "}
+            <a
+              href="https://lftm.com.br"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[color:var(--gold)] underline-offset-2 hover:underline"
+            >
+              Lifetime
+            </a>
+            . No auth, no paywall.
           </p>
         </div>
       </footer>

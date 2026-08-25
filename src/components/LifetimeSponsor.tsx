@@ -2,18 +2,15 @@ import Image from "next/image";
 
 type Props = {
   compact?: boolean;
-  align?: "end" | "start";
 };
 
-export function LifetimeSponsor({ compact = false, align = "end" }: Props) {
+export function LifetimeSponsor({ compact = false }: Props) {
   return (
     <a
       href="https://lftm.com.br"
       target="_blank"
       rel="noopener noreferrer"
-      className={`group inline-flex max-w-[220px] items-center gap-2 rounded-sm border border-border bg-card/60 px-2.5 py-1.5 no-underline hover:border-[color:var(--gold)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)] ${
-        align === "end" ? "text-right" : "text-left"
-      }`}
+      className="group inline-flex items-center gap-2 rounded-sm border border-border bg-card/60 px-3 py-1.5 text-left no-underline hover:border-[color:var(--gold)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)]"
     >
       <Image
         src="/lifetime-logo.png"
