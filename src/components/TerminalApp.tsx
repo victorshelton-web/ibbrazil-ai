@@ -1,7 +1,9 @@
 "use client";
 
+import type { FatosFeed } from "@/lib/fatos-relevantes";
 import type { MarketTape } from "@/lib/market-tape";
 import type { FeedItem, FeedStats } from "@/lib/types";
+import { FatosRelevantes } from "./FatosRelevantes";
 import { LangToggle } from "./LangToggle";
 import { LocaleProvider, useI18n } from "./LocaleProvider";
 import { MarketTapeBar } from "./MarketTapeBar";
@@ -15,11 +17,13 @@ function Shell({
   stats,
   windowLabel,
   tape,
+  fatos,
 }: {
   items: FeedItem[];
   stats: FeedStats;
   windowLabel: string;
   tape: MarketTape;
+  fatos: FatosFeed;
 }) {
   const { t } = useI18n();
 
@@ -54,7 +58,8 @@ function Shell({
 
       <StatsStrip stats={stats} />
 
-      <main className="mx-auto max-w-[1400px] px-4 py-4 md:px-6">
+      <main className="mx-auto max-w-[1400px] space-y-8 px-4 py-4 md:px-6">
+        <FatosRelevantes feed={fatos} />
         <TerminalBoard items={items} />
       </main>
 
@@ -87,6 +92,7 @@ export function TerminalApp(props: {
   stats: FeedStats;
   windowLabel: string;
   tape: MarketTape;
+  fatos: FatosFeed;
 }) {
   return (
     <LocaleProvider>

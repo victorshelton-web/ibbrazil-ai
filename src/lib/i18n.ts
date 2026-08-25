@@ -68,7 +68,7 @@ export const copy = {
     offline: "Feed offline",
     footerClock: "Display clocks use America/Sao_Paulo (BRT) and UTC. Window FX ~",
     footerData:
-      "International tape from Financial Modeling Prep (SEC EDGAR). Brazil rows curated from public filings and press. Confirm against primary sources.",
+      "International tape from Financial Modeling Prep (SEC EDGAR). B3 material facts from CVM IPE. Brazil deal rows curated from public filings and press. Confirm against primary sources.",
     footerSponsor: "Portal sponsored by",
     noAuth: "No auth, no paywall.",
     justNow: "just now",
@@ -82,6 +82,14 @@ export const copy = {
     value: "Value",
     when: "When",
     flag: "Flag",
+    secFatosKicker: "B3 / CVM",
+    secFatos: "B3 material facts",
+    blurbFatos:
+      "Official Fato Relevante filings from CVM IPE, last 21 days, grouped by theme and date. Confirm against the CVM document.",
+    fatosCount: "filings",
+    fatosDays: "days",
+    fatosCompanies: "issuers",
+    fatosSearch: "Company or subject",
   },
   pt: {
     kicker: "Terminal de M&A / Notícias",
@@ -150,7 +158,7 @@ export const copy = {
     offline: "Feed offline",
     footerClock: "Relógios em America/Sao_Paulo (BRT) e UTC. FX da janela ~",
     footerData:
-      "Fita internacional via Financial Modeling Prep (SEC EDGAR). Linhas do Brasil curadas de filings e imprensa. Confirme nas fontes primárias.",
+      "Fita internacional via Financial Modeling Prep (SEC EDGAR). Fatos relevantes da B3 via IPE da CVM. Linhas de deal do Brasil curadas de filings e imprensa. Confirme nas fontes primárias.",
     footerSponsor: "Portal patrocinado por",
     noAuth: "Sem login, sem paywall.",
     justNow: "agora",
@@ -164,6 +172,14 @@ export const copy = {
     value: "Valor",
     when: "Quando",
     flag: "Flag",
+    secFatosKicker: "B3 / CVM",
+    secFatos: "Fatos relevantes da B3",
+    blurbFatos:
+      "Fatos relevantes oficiais do IPE da CVM, últimos 21 dias, organizados por tema e data. Confirme no documento da CVM.",
+    fatosCount: "fatos",
+    fatosDays: "dias",
+    fatosCompanies: "emissoras",
+    fatosSearch: "Empresa ou assunto",
   },
 } as const;
 
