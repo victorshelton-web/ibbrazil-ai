@@ -1,6 +1,7 @@
 "use client";
 
 import type { FeedItem, FeedStats } from "@/lib/types";
+import { LangToggle } from "./LangToggle";
 import { LocaleProvider, useI18n } from "./LocaleProvider";
 import { LifetimeSponsor } from "./LifetimeSponsor";
 import { RefreshTape } from "./RefreshTape";
@@ -34,22 +35,16 @@ function Shell({
                 {t.intro} {windowLabel}.
               </p>
             </div>
-            <RefreshTape />
+            <div className="flex items-center gap-2">
+              <LangToggle />
+              <RefreshTape />
+            </div>
           </div>
           <div className="flex w-full justify-center">
             <LifetimeSponsor />
           </div>
         </div>
       </header>
-
-      <div
-        role="status"
-        className="border-b border-[color:var(--estimated)]/35 bg-[color:var(--estimated)]/8"
-      >
-        <p className="mx-auto max-w-[1400px] px-4 py-2 font-mono text-[11px] text-[color:var(--estimated)] md:px-6">
-          {t.warning}
-        </p>
-      </div>
 
       <StatsStrip stats={stats} />
 

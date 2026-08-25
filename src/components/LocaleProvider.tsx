@@ -1,16 +1,30 @@
 "use client";
 
-import { createContext, useContext } from "react";
-import { copy, type Copy } from "@/lib/i18n";
+import { createContext, useContext, useMemo, useState } from "react";
+import { copy, type Copy, type Locale } from "@/lib/i18n";
 
 type Ctx = {
+  locale: Locale;
+  setLocale: (l: Locale) => void;
   t: Copy;
 };
 
 const LocaleCtx = createContext<Ctx | null>(null);
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  return <LocaleCtx.Provider value={{ t: copy.en }}>{children}</LocaleCtx.Provider>;
+  const [locale, setLocaleState] = useState<Locale>("en");
+
+  const setLocale = (l: Locale) => {
+    setLocaleState(l);
+    document.documentElement.lang = l === "pt" ? "pt-BR" : "en";
+  };
+
+  const value = useMemo(
+    () => ({ locale, setLocale, t: copy[locale] as Copy }),
+    [locale],
+  );
+
+  return <LocaleCtx.Provider value={value}>{children}</LocaleCtx.Provider>;
 }
 
 export function useI18n() {
