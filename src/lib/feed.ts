@@ -1,5 +1,6 @@
 import type { FeedItem } from "./types";
 import seed from "@/data/seed-deals.json";
+import { attachQuotes } from "./quotes";
 
 const FX = Number(process.env.FX_BRL_USD || "5.16");
 const WINDOW_HOURS = Number(process.env.FEED_WINDOW_HOURS || "168");
@@ -145,16 +146,16 @@ function mapFmpRow(row: FmpMaRow): FeedItem | null {
 
   const acquirer = titleCaseCompany(acquirerRaw);
   const target = titleCaseCompany(targetRaw);
-  const acqTicker = row.symbol ? ` (${row.symbol})` : "";
-  const tgtTicker = row.targetedSymbol ? ` (${row.targetedSymbol})` : "";
   const publishedAt = toIso(row.acceptedDate, row.transactionDate);
 
   return {
     id: `int-fmp-${slug(row.cik || row.symbol || acquirer)}-${slug(row.targetedCik || row.targetedSymbol || target)}-${row.transactionDate || "na"}`,
     category: "international-ma",
     kind: "deal",
-    acquirer: `${acquirer}${acqTicker}`,
-    target: `${target}${tgtTicker}`,
+    acquirer,
+    target,
+    acquirerQuotes: row.symbol ? [{ ticker: row.symbol, changePct: null }] : [],
+    targetQuotes: row.targetedSymbol ? [{ ticker: row.targetedSymbol, changePct: null }] : [],
     headline: `${acquirer} files for combination with ${target}`,
     sector: "Multi-sector",
     valueUsd: null,
@@ -280,8 +281,10 @@ export async function buildFeed() {
     });
   }
 
-  const items = Array.from(byId.values()).sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  const items = await attachQuotes(
+    Array.from(byId.values()).sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    ),
   );
 
   const liveDeal = (i: FeedItem) =>

@@ -9,6 +9,7 @@ import {
   provenanceLabel,
 } from "@/lib/format";
 import { useI18n } from "./LocaleProvider";
+import { PartyName } from "./PartyName";
 
 export function DealsTable({
   rows,
@@ -40,13 +41,13 @@ export function DealsTable({
                   <span className="mb-0.5 block font-mono text-[9px] tracking-wider text-muted-foreground uppercase">
                     {labels.left}
                   </span>
-                  {item.acquirer}
+                  <PartyName name={item.acquirer} quotes={item.acquirerQuotes} />
                 </td>
                 <td className="max-w-[260px] whitespace-normal break-words px-3 py-2.5 text-zinc-200">
                   <span className="mb-0.5 block font-mono text-[9px] tracking-wider text-muted-foreground uppercase">
                     {labels.right}
                   </span>
-                  {item.target}
+                  <PartyName name={item.target} quotes={item.targetQuotes} />
                 </td>
                 <td className="whitespace-nowrap px-3 py-2.5 font-mono text-xs text-[color:var(--gold)]">
                   {item.kind === "news"

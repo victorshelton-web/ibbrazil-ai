@@ -71,7 +71,11 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
       if (sector !== "all" && item.sector !== sector) return false;
       if (!matchesValue(item, valueFilter)) return false;
       if (!q) return true;
-      const hay = [item.headline, item.acquirer, item.target, item.sector, item.highlights]
+      const tickers = [
+        ...(item.acquirerQuotes || []).map((q) => q.ticker),
+        ...(item.targetQuotes || []).map((q) => q.ticker),
+      ].join(" ");
+      const hay = [item.headline, item.acquirer, item.target, item.sector, item.highlights, tickers]
         .join(" ")
         .toLowerCase();
       return hay.includes(q);

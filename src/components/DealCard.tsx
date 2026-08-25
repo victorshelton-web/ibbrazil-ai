@@ -11,6 +11,7 @@ import {
   provenanceLabel,
 } from "@/lib/format";
 import { useI18n } from "./LocaleProvider";
+import { PartyName } from "./PartyName";
 
 export function DealCard({ item }: { item: FeedItem }) {
   const { t } = useI18n();
@@ -41,7 +42,7 @@ export function DealCard({ item }: { item: FeedItem }) {
             {labels.left}
           </dt>
           <dd className="mt-0.5 break-words whitespace-normal text-zinc-200">
-            {item.acquirer}
+            <PartyName name={item.acquirer} quotes={item.acquirerQuotes} />
           </dd>
         </div>
         <div>
@@ -49,7 +50,7 @@ export function DealCard({ item }: { item: FeedItem }) {
             {labels.right}
           </dt>
           <dd className="mt-0.5 break-words whitespace-normal text-zinc-200">
-            {item.target}
+            <PartyName name={item.target} quotes={item.targetQuotes} />
           </dd>
         </div>
         <div>

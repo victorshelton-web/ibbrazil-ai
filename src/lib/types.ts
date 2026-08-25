@@ -2,12 +2,19 @@ export type FeedCategory = "brazil-ma" | "international-ma" | "brazil-news";
 export type FeedKind = "deal" | "news";
 export type Provenance = "live" | "estimated" | "needs-api" | "api";
 
+export type PartyQuote = {
+  ticker: string;
+  changePct: number | null;
+};
+
 export type FeedItem = {
   id: string;
   category: FeedCategory;
   kind: FeedKind;
   acquirer: string;
   target: string;
+  acquirerQuotes?: PartyQuote[];
+  targetQuotes?: PartyQuote[];
   headline: string;
   sector: string;
   valueUsd: number | null;
