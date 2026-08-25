@@ -68,7 +68,7 @@ function parseListing(html: string): CadeItem[] {
   const items: CadeItem[] = [];
 
   for (const block of blocks) {
-    const href = block.match(/<h2 class="titulo">\s*<a href="([^"]+)">([^<]+)<\/a>/s);
+    const href = block.match(/<h2 class="titulo">\s*<a href="([^"]+)">([^<]+)<\/a>/);
     if (!href) continue;
     const title = decode(href[2]);
     const hay = title.toLowerCase();
