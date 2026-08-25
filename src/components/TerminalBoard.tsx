@@ -4,7 +4,6 @@ import { useMemo, useState, useTransition } from "react";
 import type { FeedCategory, FeedItem } from "@/lib/types";
 import { DealCard } from "./DealCard";
 import { DealsTable } from "./DealsTable";
-import { LifetimeSponsor } from "./LifetimeSponsor";
 import { sectionBlurb, sectionTitle } from "@/lib/format";
 
 const FILTERS: { id: "all" | FeedCategory; label: string }[] = [
@@ -220,17 +219,14 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
           aria-labelledby={section.cat}
           className="mt-8"
         >
-          <div className="mb-3 flex items-end justify-between gap-3 border-b border-border pb-2">
-            <div>
-              <p className="font-mono text-[10px] tracking-[0.2em] text-[color:var(--gold)] uppercase">
-                Section {String(idx + 1).padStart(2, "0")}
-              </p>
-              <h2 id={section.cat} className="text-lg font-semibold text-zinc-100">
-                {sectionTitle(section.cat)}
-              </h2>
-              <p className="text-xs text-muted-foreground">{sectionBlurb(section.cat)}</p>
-            </div>
-            {idx === 0 ? <LifetimeSponsor compact /> : null}
+          <div className="mb-3 border-b border-border pb-2">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-[color:var(--gold)] uppercase">
+              Section {String(idx + 1).padStart(2, "0")}
+            </p>
+            <h2 id={section.cat} className="text-lg font-semibold text-zinc-100">
+              {sectionTitle(section.cat)}
+            </h2>
+            <p className="text-xs text-muted-foreground">{sectionBlurb(section.cat)}</p>
           </div>
 
           {view === "table" ? (
