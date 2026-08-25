@@ -32,7 +32,7 @@ export default async function Home() {
   const { items, stats } = await buildFeed();
   return (
     <>
-      <SeoJsonLd items={items} lastUpdatedIso={stats.lastUpdatedIso} />
+      <SeoJsonLd items={items} stats={stats} />
       <TerminalApp
         items={items}
         stats={stats}

@@ -1,17 +1,17 @@
 import { buildJsonLd } from "@/lib/seo";
-import type { FeedItem } from "@/lib/types";
+import type { FeedItem, FeedStats } from "@/lib/types";
 
 export function SeoJsonLd({
   items,
-  lastUpdatedIso,
+  stats,
 }: {
   items: FeedItem[];
-  lastUpdatedIso: string;
+  stats: FeedStats;
 }) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: buildJsonLd(items, lastUpdatedIso) }}
+      dangerouslySetInnerHTML={{ __html: buildJsonLd(items, stats) }}
     />
   );
 }

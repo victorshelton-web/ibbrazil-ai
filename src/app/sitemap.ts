@@ -16,10 +16,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
+      url: `${SITE_URL}/llms.txt`,
+      lastModified,
+      changeFrequency: "daily",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/llms-full.txt`,
+      lastModified,
+      changeFrequency: "hourly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/ai.json`,
+      lastModified,
+      changeFrequency: "hourly",
+      priority: 0.7,
+    },
+    {
       url: `${SITE_URL}/rss.xml`,
       lastModified,
       changeFrequency: "hourly",
-      priority: 0.4,
+      priority: 0.5,
     },
   ];
 }
