@@ -1,3 +1,7 @@
+import { loadB3TickerBook } from "./b3-tickers";
+import { extractSymbols, loadQuotes } from "./quotes";
+import type { PartyQuote } from "./types";
+
 export type CadeGroup = "approved" | "restricted" | "agenda" | "review" | "other";
 
 export type CadeItem = {
@@ -8,6 +12,7 @@ export type CadeItem = {
   group: CadeGroup;
   kicker: string;
   url: string;
+  quotes: PartyQuote[];
 };
 
 export type CadeFeed = {
@@ -88,6 +93,7 @@ function parseListing(html: string): CadeItem[] {
       group: classify(title),
       kicker: kickerMatch ? decode(kickerMatch[1]) : "CADE",
       url: href[1],
+      quotes: [],
     });
   }
   return items;
@@ -122,6 +128,23 @@ export async function loadCadeFeed(): Promise<CadeFeed> {
     }
 
     items.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title));
+
+    const book = await loadB3TickerBook();
+    const symbols = Array.from(
+      new Set(
+        items.flatMap((item) => {
+          const text = `${item.title} ${item.summary}`;
+          return [...book.match(text), ...extractSymbols(text)];
+        }),
+      ),
+    );
+    const quotes = await loadQuotes(symbols, 80);
+    for (const item of items) {
+      const text = `${item.title} ${item.summary}`;
+      const found = Array.from(new Set([...book.match(text), ...extractSymbols(text)]));
+      item.quotes = found.map((ticker) => quotes.get(ticker) ?? { ticker, changePct: null });
+    }
+
     const counts: CadeFeed["counts"] = {
       all: items.length,
       approved: 0,

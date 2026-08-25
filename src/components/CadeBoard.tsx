@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { CadeFeed, CadeGroup } from "@/lib/cade";
 import { useI18n } from "./LocaleProvider";
+import { QuoteLine } from "./PartyName";
 
 const GROUPS: CadeGroup[] = ["approved", "restricted", "review", "agenda", "other"];
 
@@ -41,7 +42,8 @@ export function CadeBoard({ feed }: { feed: CadeFeed }) {
     return feed.items.filter((item) => {
       if (group !== "all" && item.group !== group) return false;
       if (!q) return true;
-      return `${item.title} ${item.summary} ${item.kicker}`.toLowerCase().includes(q);
+      const tickers = (item.quotes || []).map((q) => q.ticker.replace(/\.SA$/, "")).join(" ");
+      return `${item.title} ${item.summary} ${item.kicker} ${tickers}`.toLowerCase().includes(q);
     });
   }, [feed.items, group, query]);
 
@@ -134,6 +136,7 @@ export function CadeBoard({ feed }: { feed: CadeFeed }) {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-zinc-100">{item.title}</p>
+                    <QuoteLine quotes={item.quotes} />
                     {item.summary ? (
                       <p className="mt-1 text-xs leading-relaxed text-zinc-300">{item.summary}</p>
                     ) : null}

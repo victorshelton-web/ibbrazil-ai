@@ -29,19 +29,12 @@ function formatPct(pct: number): string {
   return `· ${abs}%`;
 }
 
-export function PartyName({
-  name,
-  quotes,
-}: {
-  name: string;
-  quotes?: PartyQuote[];
-}) {
-  const label = stripListedSuffix(name);
+export function QuoteLine({ quotes }: { quotes?: PartyQuote[] }) {
   const rows = quotes?.filter((q) => q.ticker) ?? [];
+  if (!rows.length) return null;
 
   return (
-    <div>
-      <div>{label}</div>
+    <>
       {rows.map((q) => (
         <div
           key={q.ticker}
@@ -53,6 +46,21 @@ export function PartyName({
           ) : null}
         </div>
       ))}
+    </>
+  );
+}
+
+export function PartyName({
+  name,
+  quotes,
+}: {
+  name: string;
+  quotes?: PartyQuote[];
+}) {
+  return (
+    <div>
+      <div>{stripListedSuffix(name)}</div>
+      <QuoteLine quotes={quotes} />
     </div>
   );
 }

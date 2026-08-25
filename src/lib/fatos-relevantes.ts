@@ -1,4 +1,4 @@
-import { loadB3TickerMap, normalizeCnpj } from "./b3-tickers";
+import { loadB3TickerBook, normalizeCnpj } from "./b3-tickers";
 import { loadQuotes } from "./quotes";
 import type { PartyQuote } from "./types";
 import { unzipFirst } from "./zip-csv";
@@ -199,19 +199,26 @@ export async function loadCvmIpeDesk(): Promise<{
     const comunicadoItems = collectCategory(rows, idx, "Comunicado ao Mercado");
     const all = [...fatoItems, ...comunicadoItems];
 
-    const tickerByCnpj = await loadB3TickerMap();
+    const tickerBook = await loadB3TickerBook();
     const symbols = Array.from(
       new Set(
-        all
-          .map((item) => tickerByCnpj.get(normalizeCnpj(item.cnpj)))
-          .filter((symbol): symbol is string => Boolean(symbol)),
+        all.flatMap((item) => {
+          const byCnpj = tickerBook.byCnpj.get(normalizeCnpj(item.cnpj));
+          const byName = tickerBook.match(`${item.company} ${item.subject}`);
+          return byCnpj ? [byCnpj, ...byName] : byName;
+        }),
       ),
     );
-    const book = await loadQuotes(symbols, 220);
+    const quotes = await loadQuotes(symbols, 220);
     for (const item of all) {
-      const symbol = tickerByCnpj.get(normalizeCnpj(item.cnpj));
-      if (!symbol) continue;
-      item.quotes = [book.get(symbol) ?? { ticker: symbol, changePct: null }];
+      const byCnpj = tickerBook.byCnpj.get(normalizeCnpj(item.cnpj));
+      const found = Array.from(
+        new Set([
+          ...(byCnpj ? [byCnpj] : []),
+          ...tickerBook.match(`${item.company} ${item.subject}`),
+        ]),
+      );
+      item.quotes = found.map((ticker) => quotes.get(ticker) ?? { ticker, changePct: null });
     }
 
     return {
