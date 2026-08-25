@@ -68,7 +68,7 @@ export default async function Home() {
             <RefreshTape />
           </div>
           <div className="flex w-full justify-center">
-            <LifetimeSponsor compact />
+            <LifetimeSponsor />
           </div>
         </div>
       </header>
