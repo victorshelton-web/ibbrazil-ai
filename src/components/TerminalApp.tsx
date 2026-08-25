@@ -25,7 +25,6 @@ function Shell({
 
   return (
     <div className="min-h-full bg-background text-foreground">
-      <MarketTapeBar tape={tape} />
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-4 md:px-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -50,6 +49,8 @@ function Shell({
           </div>
         </div>
       </header>
+
+      <MarketTapeBar tape={tape} />
 
       <StatsStrip stats={stats} />
 
