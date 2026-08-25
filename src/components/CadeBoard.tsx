@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CadeFeed, CadeGroup } from "@/lib/cade";
+import { quotesMatchTicker, useDesk } from "./DeskContext";
 import { useI18n } from "./LocaleProvider";
 import { QuoteLine } from "./PartyName";
 
@@ -34,8 +35,20 @@ function formatDay(isoDate: string, locale: "en" | "pt"): string {
 
 export function CadeBoard({ feed }: { feed: CadeFeed }) {
   const { locale, t } = useI18n();
+  const { tickerQuery } = useDesk();
   const [group, setGroup] = useState<CadeGroup | "all">("all");
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (!tickerQuery) return;
+    setQuery(tickerQuery);
+    setGroup("all");
+    const id = `hit-cade-${tickerQuery.toUpperCase()}`;
+    const timer = window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [tickerQuery]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -121,10 +134,19 @@ export function CadeBoard({ feed }: { feed: CadeFeed }) {
               {formatDay(day, locale)} · {rows.length}
             </p>
             <ul className="space-y-2">
-              {rows.map((item) => (
+              {rows.map((item, i) => (
                 <li
                   key={item.id}
-                  className="grid gap-1 border border-border bg-background/40 px-3 py-2 md:grid-cols-[minmax(0,180px)_1fr_auto] md:items-start md:gap-4"
+                  id={
+                    tickerQuery && i === 0 && day === byDay[0]?.[0]
+                      ? `hit-cade-${tickerQuery.toUpperCase()}`
+                      : undefined
+                  }
+                  className={`grid gap-1 border bg-background/40 px-3 py-2 md:grid-cols-[minmax(0,180px)_1fr_auto] md:items-start md:gap-4 ${
+                    tickerQuery && quotesMatchTicker(item.quotes, tickerQuery)
+                      ? "border-[color:var(--gold)]"
+                      : "border-border"
+                  }`}
                 >
                   <div>
                     <p className="font-mono text-[10px] text-[color:var(--gold)] uppercase">

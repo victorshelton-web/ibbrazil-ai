@@ -29,7 +29,7 @@ function formatPct(pct: number): string {
 
 export function QuoteLine({ quotes }: { quotes?: PartyQuote[] }) {
   const { t } = useI18n();
-  const { openComunicado } = useDesk();
+  const { openTicker } = useDesk();
   const [open, setOpen] = useState(false);
   const rows = quotes?.filter((q) => q.ticker) ?? [];
   if (!rows.length) return null;
@@ -44,7 +44,7 @@ export function QuoteLine({ quotes }: { quotes?: PartyQuote[] }) {
         >
           <button
             type="button"
-            onClick={() => openComunicado(q.ticker)}
+            onClick={() => openTicker(q.ticker)}
             className="text-muted-foreground underline-offset-2 hover:text-[color:var(--gold)] hover:underline"
           >
             {displayTicker(q.ticker)}

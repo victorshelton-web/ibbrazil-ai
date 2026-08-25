@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import type { FeedCategory, FeedItem } from "@/lib/types";
+import { quotesMatchTicker, useDesk } from "./DeskContext";
 import { DealCard } from "./DealCard";
 import { DealsTable } from "./DealsTable";
 import { sectionBlurb, sectionTitle } from "@/lib/format";
@@ -45,6 +46,7 @@ const chip =
 
 export function TerminalBoard({ items }: { items: FeedItem[] }) {
   const { t } = useI18n();
+  const { tickerQuery } = useDesk();
   const FILTERS: { id: "all" | FeedCategory; label: string }[] = [
     { id: "all", label: t.filterAll },
     { id: "brazil-ma", label: t.filterBrazil },
@@ -58,6 +60,16 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
   const [sort, setSort] = useState<SortMode>("newest");
   const [view, setView] = useState<ViewMode>("cards");
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (!tickerQuery) return;
+    startTransition(() => setQuery(tickerQuery));
+    const id = `hit-news-${tickerQuery.toUpperCase()}`;
+    const timer = window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [tickerQuery]);
 
   const sectors = useMemo(() => {
     const set = new Set(items.map((i) => i.sector).filter(Boolean));
@@ -90,8 +102,10 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
 
   const filterLabel = FILTERS.find((f) => f.id === filter)?.label ?? "All";
 
+  const firstHitId = filtered[0]?.id;
+
   return (
-    <div>
+    <div id="news-board">
       <div className="flex flex-col gap-3 border border-border bg-card/40 p-3">
         <div role="group" aria-label="Category filter" className="flex flex-wrap gap-1.5">
           {FILTERS.map((f) => (
@@ -239,8 +253,22 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
           ) : (
             <ul className="grid grid-cols-1 gap-2 xl:grid-cols-2">
               {section.rows.map((item) => (
-                <li key={item.id}>
-                  <DealCard item={item} />
+                <li
+                  key={item.id}
+                  id={
+                    tickerQuery && item.id === firstHitId
+                      ? `hit-news-${tickerQuery.toUpperCase()}`
+                      : undefined
+                  }
+                >
+                  <DealCard
+                    item={item}
+                    highlighted={
+                      Boolean(tickerQuery) &&
+                      (quotesMatchTicker(item.acquirerQuotes, tickerQuery) ||
+                        quotesMatchTicker(item.targetQuotes, tickerQuery))
+                    }
+                  />
                 </li>
               ))}
               {section.rows.length === 0 ? (

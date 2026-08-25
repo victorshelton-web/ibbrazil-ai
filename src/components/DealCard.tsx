@@ -13,14 +13,22 @@ import {
 import { useI18n } from "./LocaleProvider";
 import { PartyName } from "./PartyName";
 
-export function DealCard({ item }: { item: FeedItem }) {
+export function DealCard({
+  item,
+  highlighted = false,
+}: {
+  item: FeedItem;
+  highlighted?: boolean;
+}) {
   const { t } = useI18n();
   const labels = partyLabels(item.kind, t);
   const dashed = item.provenance === "needs-api" || item.provenance === "estimated";
 
   return (
     <article
-      className={`border border-border bg-card/60 ${dashed ? "border-dashed" : ""}`}
+      className={`border bg-card/60 ${
+        highlighted ? "border-[color:var(--gold)]" : "border-border"
+      } ${dashed && !highlighted ? "border-dashed" : ""}`}
     >
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-border px-3 py-2">
         <div className="min-w-0">

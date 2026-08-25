@@ -107,6 +107,7 @@ export const copy = {
     cadeSearch: "Company or decision",
     seeMore: "See more",
     seeLess: "See less",
+    tickerClear: "Clear ticker",
   },
   pt: {
     kicker: "Terminal de M&A / Notícias",
@@ -214,6 +215,7 @@ export const copy = {
     cadeSearch: "Empresa ou decisão",
     seeMore: "Ver mais",
     seeLess: "Ver menos",
+    tickerClear: "Limpar ticker",
   },
 } as const;
 

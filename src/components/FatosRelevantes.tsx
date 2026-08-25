@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { FatoGroup, FatosFeed } from "@/lib/fatos-relevantes";
-import { useDesk } from "./DeskContext";
+import { quotesMatchTicker, useDesk } from "./DeskContext";
 import { useI18n } from "./LocaleProvider";
 import { PartyName } from "./PartyName";
 
@@ -59,20 +59,20 @@ export function FatosRelevantes({
   variant?: "fatos" | "comunicados";
 }) {
   const { locale, t } = useI18n();
-  const { noticeQuery } = useDesk();
+  const { tickerQuery } = useDesk();
   const [group, setGroup] = useState<FatoGroup | "all">("all");
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    if (variant !== "comunicados" || !noticeQuery) return;
-    setQuery(noticeQuery);
+    if (!tickerQuery) return;
+    setQuery(tickerQuery);
     setGroup("all");
-    const id = `notice-${noticeQuery.toUpperCase()}`;
+    const id = `hit-${variant}-${tickerQuery.toUpperCase()}`;
     const timer = window.setTimeout(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 80);
     return () => window.clearTimeout(timer);
-  }, [noticeQuery, variant]);
+  }, [tickerQuery, variant]);
   const headingId = variant === "comunicados" ? "comunicados-b3" : "fatos-b3";
   const kicker = variant === "comunicados" ? t.secComunicadosKicker : t.secFatosKicker;
   const title = variant === "comunicados" ? t.secComunicados : t.secFatos;
@@ -168,16 +168,12 @@ export function FatosRelevantes({
                 <li
                   key={`${item.id}-${item.deliveredAt}-${i}`}
                   id={
-                    variant === "comunicados" && i === 0 && day === byDay[0]?.[0]
-                      ? `notice-${query.trim().toUpperCase()}`
+                    tickerQuery && i === 0 && day === byDay[0]?.[0]
+                      ? `hit-${variant}-${tickerQuery.toUpperCase()}`
                       : undefined
                   }
                   className={`grid gap-1 border bg-background/40 px-3 py-2 md:grid-cols-[minmax(0,220px)_1fr_auto] md:items-start md:gap-4 ${
-                    variant === "comunicados" &&
-                    query &&
-                    (item.quotes || []).some(
-                      (q) => q.ticker.replace(/\.SA$/, "").toLowerCase() === query.trim().toLowerCase(),
-                    )
+                    tickerQuery && quotesMatchTicker(item.quotes, tickerQuery)
                       ? "border-[color:var(--gold)]"
                       : "border-border"
                   }`}

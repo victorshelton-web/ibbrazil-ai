@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { MarketTape, TapeMarket, TapeQuote } from "@/lib/market-tape";
+import { useDesk } from "./DeskContext";
 
 function formatTapePrice(row: TapeQuote): string {
   if (row.price == null) return "—";
@@ -30,9 +31,22 @@ function formatPct(pct: number | null): string {
 }
 
 function QuoteChip({ row }: { row: TapeQuote }) {
+  const { openTicker } = useDesk();
+  const skip = row.label === "IBOV" || row.label === "COMP";
+
   return (
     <span className="inline-flex items-baseline gap-1.5 px-3 font-mono text-[11px] tracking-wide">
-      <span className="text-zinc-200">{row.label}</span>
+      {skip ? (
+        <span className="text-zinc-200">{row.label}</span>
+      ) : (
+        <button
+          type="button"
+          onClick={() => openTicker(row.label)}
+          className="text-zinc-200 underline-offset-2 hover:text-[color:var(--gold)] hover:underline"
+        >
+          {row.label}
+        </button>
+      )}
       <span className="text-[color:var(--gold)]">{formatTapePrice(row)}</span>
       <span className={changeClass(row.changePct)}>{formatPct(row.changePct)}</span>
     </span>
