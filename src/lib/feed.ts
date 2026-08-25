@@ -127,10 +127,20 @@ async function fetchFmpInternational(): Promise<{ items: FeedItem[]; connected: 
   }
 }
 
+function isPlaceholderRow(item: FeedItem): boolean {
+  const blob = `${item.id} ${item.acquirer} ${item.target} ${item.headline}`;
+  return (
+    item.id === "br-placeholder-midmarket" ||
+    item.provenance === "needs-api" ||
+    item.provenance === "estimated" ||
+    /\[NOT A FILING\]/i.test(blob) ||
+    /placeholder/i.test(blob)
+  );
+}
+
 function curatedSeed(): FeedItem[] {
   return (seed as FeedItem[])
-    .filter((item) => item.provenance !== "needs-api")
-    .filter((item) => item.id !== "br-placeholder-midmarket")
+    .filter((item) => !isPlaceholderRow(item))
     .map((item) => ({ ...item }));
 }
 

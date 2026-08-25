@@ -24,7 +24,7 @@ export default async function Home() {
               </h1>
               <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
                 Live rows marked green. API-ingested global prints use FMP/SEC.
-                Placeholders are never a closed deal.
+                Fake / placeholder filings are excluded from the tape.
               </p>
             </div>
             <div className="flex items-center gap-2 border border-border bg-card px-3 py-2">

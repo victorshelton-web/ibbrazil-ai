@@ -54,24 +54,6 @@
     "status": "Talks only — not signed"
   },
   {
-    "id": "br-placeholder-midmarket",
-    "category": "brazil-ma",
-    "kind": "deal",
-    "acquirer": "[NOT A FILING] Mid-market PE sponsor",
-    "target": "[NOT A FILING] Brazil industrials add-on",
-    "headline": "Placeholder — additional Brazil mid-market PE activity is not loaded",
-    "sector": "Industrials",
-    "valueUsd": 95000000.0,
-    "valueBrl": 490200000.0,
-    "valueNote": "Illustrative estimated band only (~USD 80–120m). This is not a disclosed or closed transaction.",
-    "highlights": "This row is a labeled placeholder so the Brazil tape is not empty if after-hours CVM filings arrive late. It is not a real closed deal. Do not treat the parties or the value as market facts.",
-    "sourceName": "Internal placeholder",
-    "sourceUrl": null,
-    "publishedAt": "2026-08-24T21:00:00.000Z",
-    "provenance": "estimated",
-    "status": "Placeholder — not a deal"
-  },
-  {
     "id": "int-nvent-maverick",
     "category": "international-ma",
     "kind": "deal",
@@ -142,24 +124,6 @@
     "publishedAt": "2026-08-24T12:00:00.000Z",
     "provenance": "live",
     "status": "Announced, close by 1 Sep"
-  },
-  {
-    "id": "int-api-refinitiv",
-    "category": "international-ma",
-    "kind": "deal",
-    "acquirer": "Refinitiv / Bloomberg / Dealogic tape",
-    "target": "Additional global announcements after cutoff",
-    "headline": "Requires API integration — extra global M&A not ingested in this static build",
-    "sector": "Multi-sector",
-    "valueUsd": null,
-    "valueBrl": null,
-    "valueNote": "No value — feed not connected.",
-    "highlights": "Production would subscribe to Refinitiv, Bloomberg SPLC, and Dealogic for late-day North America and Asia prints. This row is not a transaction. It marks a missing live feed.",
-    "sourceName": "API not connected",
-    "sourceUrl": null,
-    "publishedAt": "2026-08-24T23:00:00.000Z",
-    "provenance": "needs-api",
-    "status": "Feed not connected"
   },
   {
     "id": "news-braskem-re",

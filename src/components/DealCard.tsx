@@ -29,13 +29,17 @@ export function DealCard({ item }: { item: FeedItem }) {
           <dt className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
             Acquirer
           </dt>
-          <dd className="mt-0.5 text-zinc-200">{item.acquirer}</dd>
+          <dd className="mt-0.5 break-words whitespace-normal text-zinc-200">
+            {item.acquirer}
+          </dd>
         </div>
         <div>
           <dt className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
             Target
           </dt>
-          <dd className="mt-0.5 text-zinc-200">{item.target}</dd>
+          <dd className="mt-0.5 break-words whitespace-normal text-zinc-200">
+            {item.target}
+          </dd>
         </div>
         <div>
           <dt className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
