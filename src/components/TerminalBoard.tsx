@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import type { FeedCategory, FeedItem } from "@/lib/types";
 import { DealCard } from "./DealCard";
 import { DealsTable } from "./DealsTable";
+import { LifetimeSponsor } from "./LifetimeSponsor";
 import { sectionBlurb, sectionTitle } from "@/lib/format";
 
 const FILTERS: { id: "all" | FeedCategory; label: string }[] = [
@@ -229,9 +230,7 @@ export function TerminalBoard({ items }: { items: FeedItem[] }) {
               </h2>
               <p className="text-xs text-muted-foreground">{sectionBlurb(section.cat)}</p>
             </div>
-            <p className="font-mono text-[11px] text-muted-foreground">
-              {section.rows.length} row{section.rows.length === 1 ? "" : "s"}
-            </p>
+            {idx === 0 ? <LifetimeSponsor compact /> : null}
           </div>
 
           {view === "table" ? (

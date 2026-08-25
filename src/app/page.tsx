@@ -3,6 +3,7 @@ import { buildFeed } from "@/lib/feed";
 import { StatsStrip } from "@/components/StatsStrip";
 import { TerminalBoard } from "@/components/TerminalBoard";
 import { RefreshTape } from "@/components/RefreshTape";
+import { LifetimeSponsor } from "@/components/LifetimeSponsor";
 import { formatBrtLong } from "@/lib/format";
 
 export const revalidate = 300;
@@ -64,7 +65,10 @@ export default async function Home() {
                 and market-moving Brazilian corporate news. Window {window}.
               </p>
             </div>
-            <RefreshTape />
+            <div className="flex flex-col items-end gap-2">
+              <LifetimeSponsor compact />
+              <RefreshTape />
+            </div>
           </div>
         </div>
       </header>
