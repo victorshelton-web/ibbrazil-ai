@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useI18n } from "./LocaleProvider";
 
 const ZLAB_URL = "https://www.ziiplab.com";
@@ -17,7 +18,7 @@ export function SponsorBanner() {
       <span className="font-mono text-[10px] tracking-wide text-muted-foreground uppercase group-hover:text-zinc-200">
         {t.sponsored}
       </span>
-      <img
+      <Image
         src="/zlab-logo.png"
         alt="ZLAB"
         width={512}
