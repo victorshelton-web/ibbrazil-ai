@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FatoGroup, FatosFeed } from "@/lib/fatos-relevantes";
+import { useDesk } from "./DeskContext";
 import { useI18n } from "./LocaleProvider";
 import { PartyName } from "./PartyName";
 
@@ -58,8 +59,20 @@ export function FatosRelevantes({
   variant?: "fatos" | "comunicados";
 }) {
   const { locale, t } = useI18n();
+  const { noticeQuery } = useDesk();
   const [group, setGroup] = useState<FatoGroup | "all">("all");
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (variant !== "comunicados" || !noticeQuery) return;
+    setQuery(noticeQuery);
+    setGroup("all");
+    const id = `notice-${noticeQuery.toUpperCase()}`;
+    const timer = window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [noticeQuery, variant]);
   const headingId = variant === "comunicados" ? "comunicados-b3" : "fatos-b3";
   const kicker = variant === "comunicados" ? t.secComunicadosKicker : t.secFatosKicker;
   const title = variant === "comunicados" ? t.secComunicados : t.secFatos;
@@ -154,7 +167,20 @@ export function FatosRelevantes({
               {rows.map((item, i) => (
                 <li
                   key={`${item.id}-${item.deliveredAt}-${i}`}
-                  className="grid gap-1 border border-border bg-background/40 px-3 py-2 md:grid-cols-[minmax(0,220px)_1fr_auto] md:items-start md:gap-4"
+                  id={
+                    variant === "comunicados" && i === 0 && day === byDay[0]?.[0]
+                      ? `notice-${query.trim().toUpperCase()}`
+                      : undefined
+                  }
+                  className={`grid gap-1 border bg-background/40 px-3 py-2 md:grid-cols-[minmax(0,220px)_1fr_auto] md:items-start md:gap-4 ${
+                    variant === "comunicados" &&
+                    query &&
+                    (item.quotes || []).some(
+                      (q) => q.ticker.replace(/\.SA$/, "").toLowerCase() === query.trim().toLowerCase(),
+                    )
+                      ? "border-[color:var(--gold)]"
+                      : "border-border"
+                  }`}
                 >
                   <div>
                     <div className="text-sm font-medium text-zinc-100">

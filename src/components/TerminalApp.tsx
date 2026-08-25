@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import type { CadeFeed } from "@/lib/cade";
 import type { FatosFeed } from "@/lib/fatos-relevantes";
 import type { MarketTape } from "@/lib/market-tape";
 import type { FeedItem, FeedStats } from "@/lib/types";
 import { CadeBoard } from "./CadeBoard";
-import { DeskMenu, type DeskView } from "./DeskMenu";
+import { DeskProvider, useDesk } from "./DeskContext";
+import { DeskMenu } from "./DeskMenu";
 import { FatosRelevantes } from "./FatosRelevantes";
 import { LangToggle } from "./LangToggle";
 import { LocaleProvider, useI18n } from "./LocaleProvider";
@@ -34,7 +34,7 @@ function Shell({
   cade: CadeFeed;
 }) {
   const { t } = useI18n();
-  const [view, setView] = useState<DeskView>("news");
+  const { view, setView } = useDesk();
 
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -113,7 +113,9 @@ export function TerminalApp(props: {
 }) {
   return (
     <LocaleProvider>
-      <Shell {...props} />
+      <DeskProvider>
+        <Shell {...props} />
+      </DeskProvider>
     </LocaleProvider>
   );
 }

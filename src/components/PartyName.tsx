@@ -1,9 +1,7 @@
+import { useState } from "react";
 import type { PartyQuote } from "@/lib/types";
-
-function displayTicker(symbol: string): string {
-  if (symbol === "^BVSP") return "IBOV";
-  return symbol.replace(/\.SA$/, "");
-}
+import { displayTicker, useDesk } from "./DeskContext";
+import { useI18n } from "./LocaleProvider";
 
 function stripListedSuffix(name: string): string {
   return name
@@ -30,22 +28,41 @@ function formatPct(pct: number): string {
 }
 
 export function QuoteLine({ quotes }: { quotes?: PartyQuote[] }) {
+  const { t } = useI18n();
+  const { openComunicado } = useDesk();
+  const [open, setOpen] = useState(false);
   const rows = quotes?.filter((q) => q.ticker) ?? [];
   if (!rows.length) return null;
+  const visible = open ? rows : rows.slice(0, 3);
 
   return (
     <>
-      {rows.map((q) => (
+      {visible.map((q) => (
         <div
           key={q.ticker}
           className="mt-0.5 flex flex-wrap items-baseline gap-1.5 font-mono text-[10px] tracking-wide"
         >
-          <span className="text-muted-foreground">{displayTicker(q.ticker)}</span>
+          <button
+            type="button"
+            onClick={() => openComunicado(q.ticker)}
+            className="text-muted-foreground underline-offset-2 hover:text-[color:var(--gold)] hover:underline"
+          >
+            {displayTicker(q.ticker)}
+          </button>
           {q.changePct != null ? (
             <span className={changeClass(q.changePct)}>{formatPct(q.changePct)}</span>
           ) : null}
         </div>
       ))}
+      {rows.length > 3 ? (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="mt-0.5 font-mono text-[10px] text-[color:var(--gold)] underline-offset-2 hover:underline"
+        >
+          {open ? t.seeLess : `${t.seeMore} (${rows.length - 3})`}
+        </button>
+      ) : null}
     </>
   );
 }

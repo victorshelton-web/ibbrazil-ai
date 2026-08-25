@@ -105,6 +105,8 @@ export const copy = {
       "Official CADE news on merger filings, clearances, remedies and hearing agendas. Confirm on the CADE page.",
     cadeCount: "items",
     cadeSearch: "Company or decision",
+    seeMore: "See more",
+    seeLess: "See less",
   },
   pt: {
     kicker: "Terminal de M&A / Notícias",
@@ -210,6 +212,8 @@ export const copy = {
       "Notícias oficiais do CADE sobre atos de concentração, aprovações, restrições e pautas. Confirme na página do CADE.",
     cadeCount: "itens",
     cadeSearch: "Empresa ou decisão",
+    seeMore: "Ver mais",
+    seeLess: "Ver menos",
   },
 } as const;
 
