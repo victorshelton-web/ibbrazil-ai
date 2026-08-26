@@ -50,7 +50,7 @@ export const copy = {
     blurbBr: "Domestic Brazil M&A, VC rounds, and major corporate-control events.",
     blurbInt: "Major global M&A and high-impact corporate developments.",
     blurbNews:
-      "Market-moving Brazil news that is not a deal — rates, earnings, regulation, large stock moves, macro.",
+      "Live Brazil session and corporate news from G1 and InfoMoney — rates, earnings, regulation, large stock moves. Confirm against the source.",
     empty: "No rows in this filter.",
     acquirer: "Acquirer",
     target: "Target",
@@ -68,7 +68,7 @@ export const copy = {
     offline: "Feed offline",
     footerClock: "Display clocks use America/Sao_Paulo (BRT) and UTC. Window FX ~",
     footerData:
-      "International tape from Financial Modeling Prep (SEC EDGAR). B3 facts and market notices from CVM IPE. CADE merger news from the official site. Brazil deal rows curated from public filings and press. Confirm against primary sources.",
+      "International tape from Financial Modeling Prep (SEC EDGAR). Brazil session and corporate news from G1 and InfoMoney RSS. B3 facts and market notices from CVM IPE. CADE merger news from the official site. Confirm against primary sources.",
     footerSponsor: "Portal sponsored by",
     noAuth: "No auth, no paywall.",
     justNow: "just now",
@@ -159,7 +159,7 @@ export const copy = {
     blurbBr: "M&A doméstico, rodadas de VC e eventos de controle societário.",
     blurbInt: "M&A global e desenvolvimentos corporativos de alto impacto.",
     blurbNews:
-      "Notícias que movem o mercado e não são deal — juros, resultados, regulação, ações, macro.",
+      "Notícias corporativas e de pregão ao vivo via G1 e InfoMoney — juros, resultados, regulação, ações. Confirme na fonte.",
     empty: "Nenhuma linha neste filtro.",
     acquirer: "Comprador",
     target: "Alvo",
@@ -177,7 +177,7 @@ export const copy = {
     offline: "Feed offline",
     footerClock: "Relógios em America/Sao_Paulo (BRT) e UTC. FX da janela ~",
     footerData:
-      "Fita internacional via Financial Modeling Prep (SEC EDGAR). Fatos e comunicados da B3 via IPE da CVM. Atos de concentração via site oficial do CADE. Linhas de deal do Brasil curadas de filings e imprensa. Confirme nas fontes primárias.",
+      "Fita internacional via Financial Modeling Prep (SEC EDGAR). Notícias corporativas do Brasil via RSS do G1 e InfoMoney. Fatos e comunicados da B3 via IPE da CVM. Atos de concentração via site oficial do CADE. Confirme nas fontes primárias.",
     footerSponsor: "Portal patrocinado por",
     noAuth: "Sem login, sem paywall.",
     justNow: "agora",

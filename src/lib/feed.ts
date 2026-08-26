@@ -1,5 +1,6 @@
 import type { FeedItem } from "./types";
 import seed from "@/data/seed-deals.json";
+import { fetchLiveBrazilNews } from "./live-news";
 import { attachQuotes } from "./quotes";
 
 const FX = Number(process.env.FX_BRL_USD || "5.16");
@@ -241,10 +242,13 @@ function normParty(s: string): string {
 
 export async function buildFeed() {
   const curated = curatedSeed();
-  const fmp = await fetchFmpInternational();
+  const [fmp, liveNews] = await Promise.all([fetchFmpInternational(), fetchLiveBrazilNews(curated)]);
 
   const byId = new Map<string, FeedItem>();
   for (const item of curated) byId.set(item.id, item);
+  for (const item of liveNews) {
+    if (!byId.has(item.id)) byId.set(item.id, item);
+  }
 
   const curatedIntlKeys = new Set(
     curated

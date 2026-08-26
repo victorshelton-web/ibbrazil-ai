@@ -9,6 +9,9 @@ const NAME_TICKERS: { test: RegExp; symbol: string }[] = [
   { test: /\bvale\b/i, symbol: "VALE3.SA" },
   { test: /\bbraskem\b/i, symbol: "BRKM5.SA" },
   { test: /\bibovespa\b/i, symbol: "^BVSP" },
+  { test: /\bdesktop\b/i, symbol: "DESK3.SA" },
+  { test: /\busiminas\b/i, symbol: "USIM5.SA" },
+  { test: /\bhapvida\b/i, symbol: "HAPV3.SA" },
 ];
 
 function unique(symbols: string[]): string[] {
